@@ -24,11 +24,42 @@ const sampleNotebook: NoteBook = {
 };
 
 export default function NotebookApp() {
-  // Support multiple notebooks for future expansion; start with sample
+  // Support multiple notebooks for future expansion; start with sample but load/save from localStorage
+  const STORAGE_KEY = "omni_notebooks_v1";
+
   const [notebooks, setNotebooks] = useState<NoteBook[]>([sampleNotebook]);
   const [expandedNotebookIds, setExpandedNotebookIds] = useState<Record<string, boolean>>({ [sampleNotebook.id]: true });
   const [selectedNotebookId, setSelectedNotebookId] = useState<string>(sampleNotebook.id);
   const [selectedNoteId, setSelectedNoteId] = useState<string>(sampleNotebook.notes[0]?.id ?? "");
+
+  // Load persisted notebooks on mount
+  React.useEffect(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as NoteBook[];
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setNotebooks(parsed);
+          // try to restore selection
+          const first = parsed[0];
+          setSelectedNotebookId(first.id);
+          setSelectedNoteId(first.notes?.[0]?.id ?? "");
+          setExpandedNotebookIds({ [first.id]: true });
+        }
+      }
+    } catch (e) {
+      // ignore parse errors
+    }
+  }, []);
+
+  // Persist notebooks when they change
+  React.useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(notebooks));
+    } catch (e) {
+      // ignore
+    }
+  }, [notebooks]);
 
   // Local editing state for the current note
   const currentNotebook = notebooks.find((n) => n.id === selectedNotebookId) as NoteBook | undefined;

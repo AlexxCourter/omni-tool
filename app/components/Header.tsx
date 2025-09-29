@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-
-type View = "dashboard" | "calculator" | "notebook" | "counter" | "dice" | "worldclock";
+import type { View } from "../types";
 
 export default function Header({
   view,
@@ -31,6 +30,7 @@ export default function Header({
           <option value="counter">Counter</option>
           <option value="dice">Dice</option>
           <option value="worldclock">World Clock</option>
+          <option value="quickmarks">Quickmarks</option>
         </select>
       </div>
 

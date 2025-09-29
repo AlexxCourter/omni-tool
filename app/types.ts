@@ -13,3 +13,5 @@ export interface NoteBook {
   color?: string;
   notes: Note[];
 }
+
+export type View = "dashboard" | "calculator" | "notebook" | "counter" | "dice" | "worldclock" | "quickmarks";

@@ -210,3 +210,24 @@ body {
   }
 }
 
+/* Bottom quick menu */
+.bottom-quick-menu {
+  pointer-events: auto;
+}
+
+/* Only show bottom quick menu on mobile */
+@media (min-width: 641px) {
+  .bottom-quick-menu { display: none !important; }
+  .fixed.w-\[320px\] { display: none !important; } /* hide drawer on larger screens */
+}
+
+/* Drawer transitions */
+.fixed .translate-x-full {
+  transform: translateX(100%);
+}
+
+.fixed .translate-x-0 {
+  transform: translateX(0);
+}
+
+

@@ -1,8 +1,7 @@
 "use client";
 
 import React from "react";
-
-type View = "dashboard" | "calculator" | "notebook" | "counter" | "dice" | "worldclock";
+import type { View } from "../types";
 
 export default function Dashboard({ setView }: { setView: React.Dispatch<React.SetStateAction<View>> }) {
   return (
@@ -50,12 +49,20 @@ export default function Dashboard({ setView }: { setView: React.Dispatch<React.S
         </button>
 
         <button
+          onClick={() => setView("quickmarks")}
+          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
+          aria-label="Open Quickmarks"
+        >
+          <img src="/quickmark.png" alt="Quickmarks" className="w-20 h-20 object-contain" />
+          <div className="font-semibold">Quickmarks</div>
+        </button>
+
+        <button
           onClick={() => setView("counter")}
           className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
           aria-label="Open Counter"
         >
-          {/* Counter has no image; render a square badge similar to others */}
-          <div className="w-20 h-20 flex items-center justify-center bg-gray-800 rounded text-white font-bold">Cnt</div>
+          <img src="/counter.png" alt="Counter" className="w-20 h-20 object-contain" />
           <div className="font-semibold">Counter</div>
         </button>
       </div>
