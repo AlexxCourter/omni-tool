@@ -158,7 +158,8 @@ body {
     transition: transform 220ms ease;
     z-index: 60;
     padding: 12px;
-    background: var(--card-bg);
+    /* Use a solid non-transparent background on mobile to avoid graphical issues */
+    background: var(--background);
     overflow: auto;
     box-shadow: 0 12px 32px rgba(2,6,23,0.6);
   }
@@ -190,6 +191,22 @@ body {
   }
   .world-clock-time {
     font-size: 1.6rem; /* better fit on small devices */
+  }
+
+  /* Hide redundant timezone label on small clock cards to reduce visual clutter */
+  .world-clock-card .tz-label {
+    display: none;
+  }
+
+  /* Notebook header: ensure Save button is visible on small viewports */
+  .note-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .note-header .save-btn {
+    align-self: stretch; /* make the save button full-width on small screens */
   }
 }
 

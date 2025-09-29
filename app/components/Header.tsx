@@ -2,7 +2,7 @@
 
 import React from "react";
 
-type View = "calculator" | "notebook" | "counter" | "dice" | "worldclock";
+type View = "dashboard" | "calculator" | "notebook" | "counter" | "dice" | "worldclock";
 
 export default function Header({
   view,
@@ -14,8 +14,8 @@ export default function Header({
   return (
     <header className="w-full border-b py-3 px-6 flex items-center gap-4">
       <div className="font-bold text-lg flex items-center gap-2">
-        <img src="/omnitool.png" alt="OMNI-TOOL logo" className="logo-img" />
-        <span>OMNI-TOOL</span>
+        <img src="/omnitool.png" alt="OMNI-TOOL logo" className="logo-img" onClick={() => setView("dashboard")} style={{ cursor: "pointer" }} />
+        <span onClick={() => setView("dashboard")} style={{ cursor: "pointer" }}>OMNI-TOOL</span>
       </div>
 
       <div className="flex-1 flex justify-center">
@@ -25,6 +25,7 @@ export default function Header({
           onChange={(e) => setView(e.target.value as View)}
           className="px-3 py-1 border rounded"
         >
+          <option value="dashboard">Dashboard</option>
           <option value="calculator">Calculator</option>
           <option value="notebook">Notebook</option>
           <option value="counter">Counter</option>

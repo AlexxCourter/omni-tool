@@ -65,7 +65,7 @@ export default function WorldClock() {
                   <option key={t} value={t}>{t}</option>
                 ))}
               </select>
-              <div className="text-sm opacity-60">{tz}</div>
+              <div className="text-sm opacity-60 tz-label">{tz}</div>
             </div>
             <div className="text-3xl font-mono text-center world-clock-time">{formatTime(now, tz)}</div>
           </div>

@@ -186,13 +186,13 @@ export default function NotebookApp() {
 
           {currentNote && (
             <div className="border rounded p-4">
-              <div className="mb-4 flex items-center justify-between">
+              <div className="mb-4 flex items-center justify-between note-header">
                 <div>
                   <input value={draftTitle} onChange={(e) => setDraftTitle(e.target.value)} className="text-2xl font-semibold bg-transparent border-b pb-1" />
                   <div className="text-xs opacity-60">Created {new Date(currentNote.dateCreated).toLocaleString()}</div>
                 </div>
                 <div>
-                  <button onClick={saveNote} className="px-3 py-1 border rounded bg-blue-600 text-white">Save</button>
+                  <button onClick={saveNote} className="px-3 py-1 border rounded bg-blue-600 text-white save-btn">Save</button>
                 </div>
               </div>
 
