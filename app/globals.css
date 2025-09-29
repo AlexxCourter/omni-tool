@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+/* Global theme variables tuned for a "galaxy / sci-fi" aesthetic.
+   Uses bright cyan/blue text on a deep space background. */
+:root {
+  --background: #071028; /* deep space navy */
+  --foreground: #9be7ff; /* bright light cyan for text */
+  --muted: #6ea8bf; /* softer cyan for secondary text */
+  --accent: #7be8ff; /* accent glow */
+
+  --card-bg: rgba(255,255,255,0.03);
+  --btn-bg: #0c1520; /* dark button background */
+  --btn-text: #d9f8ff; /* button text */
+  --btn-op-bg: #112737; /* operator button */
+  --btn-eq-bg: #0b6cff; /* equal button */
+}
+
+/* Keep CSS variables; font variables are provided by layout font imports */
+/* --color-background and other CSS variables are defined above */
+
+@media (prefers-color-scheme: light) {
+  /* Keep the sci-fi palette even in light mode but slightly adjusted */
+  :root {
+    --background: #eaf6ff; /* very light */
+    --foreground: #04293a; /* dark teal text on light */
+    --muted: #356b7a;
+    --card-bg: rgba(2,6,23,0.03);
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Small logo sizing used in header to avoid layout shifts */
+.logo-img {
+  height: 20px;
+  width: auto;
+  display: inline-block;
+  margin-right: 6px;
+  object-fit: contain;
+}
+
+/* Calculator specific helpers */
+.calc-shell {
+  display: grid;
+  grid-template-columns: 320px 1fr; /* thin calculator + history */
+  gap: 20px;
+}
+
+.calc-card {
+  background: var(--card-bg);
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--btn-text);
+}
+
+.calc-display {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  color: var(--foreground);
+  padding: 12px;
+  border-radius: 6px;
+  font-family: var(--font-mono, monospace);
+  font-size: 1.5rem;
+  text-align: right;
+  min-height: 48px;
+}
+
+.btn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 10px 12px;
+  border-radius: 6px;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.4) inset;
+}
+
+.btn:hover { transform: translateY(-1px); }
+
+.btn-op {
+  background: var(--btn-op-bg);
+}
+
+.btn-eq {
+  background: var(--btn-eq-bg);
+  color: white;
+}
+
+.history-card {
+  background: rgba(255,255,255,0.02);
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--muted);
+  max-height: 420px;
+  overflow: auto;
+}
+
+.history-item { padding: 8px 6px; border-bottom: 1px dashed rgba(255,255,255,0.02); }
+.history-expr { color: var(--muted); font-family: var(--font-mono, monospace); }
+.history-res { color: var(--foreground); font-weight: 600; }
+
+/* Dice button helpers */
+.dice-btn {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.01);
+  color: var(--btn-text);
+  transition: transform .08s ease, box-shadow .08s ease, background .08s ease;
+}
+.dice-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(11,108,255,0.08); }
+
+.selected-dice {
+  background: linear-gradient(180deg, rgba(11,108,255,0.18), rgba(7,35,68,0.2));
+  box-shadow: 0 6px 18px rgba(11,108,255,0.18), inset 0 -1px 0 rgba(255,255,255,0.02);
+  border-color: rgba(11,108,255,0.6);
+  color: white;
+  font-weight: 700;
+}
+
