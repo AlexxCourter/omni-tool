@@ -5,6 +5,8 @@ Omni-tool is a collection of mini-apps that help to replace the need for a clutt
 This project is created and maintained by Alex DK Courter.
 Created: September 24, 2025
 
+Open source and free to use for personal or commercial purposes.
+
 ## Getting Started
 
 First, run the development server:
