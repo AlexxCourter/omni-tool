@@ -221,6 +221,15 @@ body {
   .fixed.w-\[320px\] { display: none !important; } /* hide drawer on larger screens */
 }
 
+/* Drawer / bottom menu top separator styling */
+.bottom-quick-menu img { display: block; }
+.fixed[z-60] {
+  z-index: 60;
+}
+
+/* ensure drawer appears above other content */
+.fixed { position: fixed; }
+
 /* Drawer transitions */
 .fixed .translate-x-full {
   transform: translateX(100%);

@@ -52,17 +52,31 @@ export default function BottomQuickMenu({ setView }: { setView: React.Dispatch<R
 
   return (
     <>
-      <div className="bottom-quick-menu fixed bottom-0 left-0 right-0 z-50 flex justify-center items-end p-3 pointer-events-auto">
+      <div className="bottom-quick-menu fixed bottom-0 left-0 right-0 z-50 flex justify-center items-end p-0 pointer-events-auto">
         <div className="w-full max-w-4xl mx-auto relative">
-          <div className="bg-transparent h-12 rounded flex items-center justify-end px-4">
-            <button onClick={() => setOpen(true)} className="p-2 rounded text-xl" title="Open quick menu settings">🔧</button>
+          <div className="h-12 rounded flex items-center justify-end px-4" style={{ background: 'var(--background)', boxShadow: '0 -6px 24px rgba(0,0,0,0.4)' }}>
+            <div className="flex items-center gap-3 flex-row-reverse">
+              {selected.map((s) => {
+                const info = AVAILABLE.find((a) => a.id === s);
+                if (!info) return null;
+                return (
+                  <button key={s} onClick={() => setView(s)} className="p-0 h-10 w-10 flex items-center justify-center">
+                    {info.icon ? <img src={info.icon} alt={info.label} className="w-8 h-8 object-contain" /> : <div className="w-8 h-8 bg-gray-700 rounded" />}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="ml-3">
+              <button onClick={() => setOpen(true)} className="p-2 rounded text-xl" title="Open quick menu settings">🔧</button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Drawer on right */}
       <div className={`fixed top-0 right-0 bottom-0 w-[320px] z-60 transform transition-transform ${open ? "translate-x-0" : "translate-x-full"}`} style={{ background: 'var(--background)', color: 'var(--foreground)', boxShadow: '0 12px 40px rgba(0,0,0,0.6)' }}>
-        <div className="p-4 border-b flex items-center justify-between">
+        <div style={{ height: 4, background: 'var(--accent)' }} />
+        <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: 'rgba(255,255,255,0.03)' }}>
           <div>
             <div className="font-semibold">Add up to 4 to your quick select menu</div>
             <div className="text-xs opacity-60">Tap icons to toggle</div>
