@@ -120,3 +120,76 @@ body {
   font-weight: 700;
 }
 
+
+/* Responsive / Mobile friendly tweaks */
+@media (max-width: 640px) {
+  /* Stack calculator and history top-to-bottom */
+  .calc-shell {
+    grid-template-columns: 1fr; /* single column */
+    gap: 12px;
+  }
+
+  /* Make calculator card full width and keep history below it */
+  .calc-card {
+    width: 100%;
+  }
+
+  /* Notebook: hide the aside from normal flow and enable drawer behavior */
+  .mobile-hamburger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: var(--btn-bg);
+    color: var(--btn-text);
+    border: 1px solid rgba(255,255,255,0.04);
+    font-size: 18px;
+  }
+
+  /* make the aside become an off-canvas panel */
+  .notebook-aside {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    transform: translateX(-110%);
+    transition: transform 220ms ease;
+    z-index: 60;
+    padding: 12px;
+    background: var(--card-bg);
+    overflow: auto;
+    box-shadow: 0 12px 32px rgba(2,6,23,0.6);
+  }
+
+  /* Main content should use full width when aside is off-canvas */
+  .notebook-root .flex > section,
+  .notebook-root .flex > .main-content {
+    width: 100%;
+  }
+
+  /* overlay that appears when drawer is open */
+  .drawer-overlay {
+    display: none;
+  }
+  .notebook-root.drawer-open .notebook-aside {
+    transform: translateX(0);
+  }
+  .notebook-root.drawer-open .drawer-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 50;
+  }
+
+  /* improve world clock readability on mobile: single column and slightly smaller font */
+  .world-clock-card {
+    padding: 10px;
+  }
+  .world-clock-time {
+    font-size: 1.6rem; /* better fit on small devices */
+  }
+}
+

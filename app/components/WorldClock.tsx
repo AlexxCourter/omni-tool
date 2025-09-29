@@ -45,10 +45,10 @@ export default function WorldClock() {
   }
 
   return (
-    <div className="p-6">
-      <div className="mb-4 border rounded p-4 max-w-lg">
+    <div className="p-6 world-clock-root">
+      <div className="mb-4 border rounded p-4 max-w-lg world-clock-card">
         <div className="text-sm opacity-60">Local time</div>
-        <div className="text-5xl font-mono mt-2">{formatTime(now)}</div>
+        <div className="text-5xl font-mono mt-2 world-clock-local">{formatTime(now)}</div>
         <div className="text-xs opacity-60 mt-1">{Intl.DateTimeFormat().resolvedOptions().timeZone}</div>
       </div>
 
@@ -56,9 +56,9 @@ export default function WorldClock() {
         <button onClick={addZone} className="px-3 py-1 border rounded bg-blue-600 text-white">Add timezone</button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="world-clock-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
         {zones.map((tz, idx) => (
-          <div key={idx} className="p-3 border rounded">
+          <div key={idx} className="p-3 border rounded world-clock-card">
             <div className="flex justify-between items-center mb-2">
               <select value={tz} onChange={(e) => setZoneAt(idx, e.target.value)} className="px-2 py-1 border rounded">
                 {TIMEZONES.map((t) => (
@@ -67,7 +67,7 @@ export default function WorldClock() {
               </select>
               <div className="text-sm opacity-60">{tz}</div>
             </div>
-            <div className="text-3xl font-mono text-center">{formatTime(now, tz)}</div>
+            <div className="text-3xl font-mono text-center world-clock-time">{formatTime(now, tz)}</div>
           </div>
         ))}
       </div>

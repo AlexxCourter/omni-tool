@@ -89,11 +89,26 @@ export default function NotebookApp() {
     );
   }
 
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  function closeDrawer() {
+    setDrawerOpen(false);
+  }
+
   return (
-    <div className="p-4">
+    <div className={`p-4 notebook-root ${drawerOpen ? "drawer-open" : ""}`}>
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button className="mobile-hamburger mr-2" onClick={() => setDrawerOpen((s) => !s)} aria-label="Open notebooks menu">
+            ☰
+          </button>
+          <div className="font-bold">Notes</div>
+        </div>
+      </div>
+
       <div className="flex gap-6">
         {/* Sidebar */}
-        <aside className="w-[260px]">
+        <aside className="w-[260px] notebook-aside" aria-hidden={!drawerOpen && undefined}>
           <div className="mb-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded" style={{ background: currentNotebook?.color ?? "#222" }} />
@@ -158,10 +173,13 @@ export default function NotebookApp() {
               </div>
             ))}
           </div>
-        </aside>
+  </aside>
+
+  {/* Overlay for drawer on mobile */}
+  {drawerOpen && <div className="drawer-overlay" onClick={closeDrawer} />}
 
         {/* Main content area */}
-        <section className="flex-1">
+  <section className="flex-1 main-content">
           {!currentNote && (
             <div className="p-6 border rounded">No page selected. Create a page from the sidebar.</div>
           )}
