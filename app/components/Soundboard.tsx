@@ -2,9 +2,18 @@
 
 import React from "react";
 
+declare global {
+  interface Window {
+    // older Safari exposes webkitAudioContext
+    webkitAudioContext?: typeof AudioContext;
+  }
+}
+
 function playTone(freq: number, duration = 0.6) {
   try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const AudioCtor = window.AudioContext ?? window.webkitAudioContext;
+    if (!AudioCtor) return;
+    const ctx = new AudioCtor();
     const o = ctx.createOscillator();
     const g = ctx.createGain();
     o.type = "sine";
@@ -15,9 +24,21 @@ function playTone(freq: number, duration = 0.6) {
     g.gain.exponentialRampToValueAtTime(0.3, ctx.currentTime + 0.02);
     o.start();
     setTimeout(() => {
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
-      try { o.stop(); } catch (e) {}
-      try { ctx.close(); } catch (e) {}
+      try {
+        g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+      } catch (err) {
+        /* ignore */
+      }
+      try {
+        o.stop();
+      } catch (err) {
+        /* ignore */
+      }
+      try {
+        ctx.close();
+      } catch (err) {
+        /* ignore */
+      }
     }, duration * 1000);
   } catch (e) {
     // ignore if audio fails
