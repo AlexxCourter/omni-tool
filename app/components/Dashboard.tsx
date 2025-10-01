@@ -92,6 +92,24 @@ export default function Dashboard({ setView }: { setView: React.Dispatch<React.S
           <img src="/budget.png" alt="Budget" className="w-20 h-20 object-contain" />
           <div className="font-semibold">Budget</div>
         </button>
+
+        <button
+          onClick={() => setView("checkers")}
+          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
+          aria-label="Open Checkers"
+        >
+          <img src="/checkers.png" alt="Checkers" className="w-20 h-20 object-contain" />
+          <div className="font-semibold">Checkers</div>
+        </button>
+
+        <button
+          onClick={() => setView("chess")}
+          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
+          aria-label="Open Chess"
+        >
+          <img src="/chess.png" alt="Chess" className="w-20 h-20 object-contain" />
+          <div className="font-semibold">Chess</div>
+        </button>
       </div>
     </div>
   );

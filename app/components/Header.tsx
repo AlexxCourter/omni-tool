@@ -34,6 +34,8 @@ export default function Header({
           <option value="soundboard">Soundboard</option>
           <option value="memoji">Memoji</option>
           <option value="budget">Budget</option>
+          <option value="checkers">Checkers</option>
+          <option value="chess">Chess</option>
         </select>
       </div>
 

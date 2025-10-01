@@ -285,6 +285,102 @@ body {
 .budget-form input { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03); color: var(--foreground); }
 .expenses-list { background: rgba(255,255,255,0.01); }
 
+/* Checkers board styling */
+.checkers-board {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  /* keep the board square on larger screens */
+  aspect-ratio: 1 / 1;
+  grid-auto-rows: 1fr;
+}
+.square-light { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); }
+.square-dark { background: linear-gradient(180deg, rgba(2,6,23,0.12), rgba(2,6,23,0.08)); }
+.selected-square { outline: 3px solid rgba(107, 219, 255, 0.28); }
+.move-target { box-shadow: inset 0 0 0 3px rgba(59, 255, 153, 0.12); }
+.checkers-board .square-button { border: none; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+
+/* Chess board styles (reuse similar sizing) */
+.chess-board { width: 100%; max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(8, 1fr); aspect-ratio: 1 / 1; grid-auto-rows: 1fr; }
+/* Promotion modal: use an opaque, high-contrast panel so the promotion chooser is readable */
+.promo-modal .promo-card {
+  /* nearly-opaque dark card for strong contrast against backdrop */
+  background: rgba(2,6,23,0.96);
+  color: var(--foreground);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 12px 34px rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.04);
+  backdrop-filter: none; /* avoid glass effects that reduce legibility */
+  z-index: 80;
+}
+
+.promo-backdrop {
+  background: rgba(0,0,0,0.6); /* slightly stronger backdrop to focus the modal */
+  backdrop-filter: none;
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+}
+
+/* Light-theme override so modal stays readable when using a light color-scheme */
+@media (prefers-color-scheme: light) {
+  .promo-modal .promo-card {
+    background: rgba(255,255,255,0.98);
+    color: var(--foreground);
+    border: 1px solid rgba(2,6,23,0.06);
+    box-shadow: 0 8px 20px rgba(2,6,23,0.08);
+  }
+  .promo-backdrop { background: rgba(0,0,0,0.35); }
+}
+.chess-board button { width: 100%; height: 100%; border: none; display:flex; align-items:center; justify-content:center; }
+.chess-board .square-light { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); }
+.chess-board .square-dark { background: linear-gradient(180deg, rgba(2,6,23,0.12), rgba(2,6,23,0.08)); }
+
+@media (max-width: 640px) {
+  .chess-board { width: calc(100vw - 24px); left: 50%; transform: translateX(-50%); }
+  .chess-board .fa-icon { font-size: calc((100vw - 48px) / 12); }
+  /* Ensure board is visually centered and not clipped by parent padding */
+  .chess-board { position: relative; }
+  /* piece sizing on small screens */
+  .chess-board .piece-emoji { font-size: calc((100vw - 48px) / 10); }
+}
+
+/* Piece color adjustments */
+.piece-emoji { font-size: 20px; line-height: 1; }
+.piece-white { color: #ffffff; text-shadow: 0 1px 0 rgba(0,0,0,0.6); }
+.piece-black { color: #1f2937 !important; /* dark slate gray for black pieces */ text-shadow: 0 1px 0 rgba(255,255,255,0.02); filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
+/* On dark squares keep the same base color but add a subtle outer glow to increase perceived contrast */
+.piece-black.on-dark { color: #1f2937 !important; text-shadow: 0 1px 0 rgba(255,255,255,0.02); filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6)); }
+.piece-black.on-light { color: #1f2937 !important; }
+
+/* Ensure FontAwesome SVG icons inherit the CSS currentColor */
+.chess-board .svg-inline--fa, .chess-board svg { fill: currentColor; color: inherit; }
+
+@media (max-width: 640px) {
+  /* Expand the board to nearly full viewport width and center it, ignoring parent padding */
+  .checkers-board {
+    width: calc(100vw - 24px); /* leave a tiny gutter so edges aren't flush with screen */
+    max-width: none;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    aspect-ratio: 1 / 1;
+    grid-auto-rows: 1fr;
+  }
+
+  /* scale piece emoji so they remain proportional on small screens */
+  .checkers-board .piece-emoji { font-size: calc((100vw - 48px) / 12); }
+}
+
+/* King overlay and focus styles */
+.king-overlay { position: absolute; top: -6px; font-size: 10px; transform: translateY(-50%); pointer-events: none; }
+.piece-emoji { font-size: 20px; }
+.selected-square:focus { outline: 2px solid rgba(107,219,255,0.3); }
+.checkers-board button:focus { outline: 2px dashed rgba(255,255,255,0.06); }
+
 /* Budget responsive tweaks */
 .budget-input { font-size: 1rem; }
 .expense-name { min-width: 110px; }

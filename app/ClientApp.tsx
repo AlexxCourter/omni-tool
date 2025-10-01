@@ -13,6 +13,8 @@ import BottomQuickMenu from "./components/BottomQuickMenu";
 import Soundboard from "./components/Soundboard";
 import Memoji from "./components/Memoji";
 import Budget from "./components/Budget";
+import Checkers from "./components/Checkers";
+import ChessComponent from "./components/Chess";
 import type { View } from "./types";
 
 export default function ClientApp({ children }: { children: React.ReactNode }) {
@@ -32,6 +34,8 @@ export default function ClientApp({ children }: { children: React.ReactNode }) {
           {view === "soundboard" && <Soundboard />}
           {view === "memoji" && <Memoji />}
           {view === "budget" && <Budget />}
+          {view === "checkers" && <Checkers />}
+          {view === "chess" && <ChessComponent />}
           {view === "worldclock" && <WorldClock />}
           {/* fallback: show children when no view matched */}
           {!["calculator", "notebook"].includes(view) && children}
