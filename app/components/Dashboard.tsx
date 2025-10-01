@@ -58,12 +58,39 @@ export default function Dashboard({ setView }: { setView: React.Dispatch<React.S
         </button>
 
         <button
+          onClick={() => setView("soundboard")}
+          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
+          aria-label="Open Soundboard"
+        >
+          <img src="/soundboard.png" alt="Soundboard" className="w-20 h-20 object-contain" />
+          <div className="font-semibold">Soundboard</div>
+        </button>
+
+        <button
           onClick={() => setView("counter")}
           className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
           aria-label="Open Counter"
         >
           <img src="/counter.png" alt="Counter" className="w-20 h-20 object-contain" />
           <div className="font-semibold">Counter</div>
+        </button>
+
+        <button
+          onClick={() => setView("memoji")}
+          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
+          aria-label="Open Memoji"
+        >
+          <img src="/memoji.png" alt="Memoji" className="w-20 h-20 object-contain" />
+          <div className="font-semibold">Memoji</div>
+        </button>
+
+        <button
+          onClick={() => setView("budget")}
+          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
+          aria-label="Open Budget"
+        >
+          <img src="/budget.png" alt="Budget" className="w-20 h-20 object-contain" />
+          <div className="font-semibold">Budget</div>
         </button>
       </div>
     </div>

@@ -31,6 +31,9 @@ export default function Header({
           <option value="dice">Dice</option>
           <option value="worldclock">World Clock</option>
           <option value="quickmarks">Quickmarks</option>
+          <option value="soundboard">Soundboard</option>
+          <option value="memoji">Memoji</option>
+          <option value="budget">Budget</option>
         </select>
       </div>
 

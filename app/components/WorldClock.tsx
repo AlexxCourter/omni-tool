@@ -56,7 +56,7 @@ export default function WorldClock() {
         <button onClick={addZone} className="px-3 py-1 border rounded bg-blue-600 text-white">Add timezone</button>
       </div>
 
-      <div className="world-clock-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16 }}>
+      <div className="world-clock-grid">
         {zones.map((tz, idx) => (
           <div key={idx} className="p-3 border rounded world-clock-card">
             <div className="flex justify-between items-center mb-2">

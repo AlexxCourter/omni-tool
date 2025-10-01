@@ -13,6 +13,7 @@ const AVAILABLE: { id: View; label: string; icon: string }[] = [
   { id: "counter", label: "Counter", icon: "/counter.png" },
   { id: "dashboard", label: "Dashboard", icon: "/omnitool.png" },
   { id: "quickmarks", label: "Quickmarks", icon: "/quickmark.png" },
+  { id: "soundboard", label: "Soundboard", icon: "/soundboard.png" },
 ];
 
 export default function BottomQuickMenu({ setView }: { setView: React.Dispatch<React.SetStateAction<View>> }) {

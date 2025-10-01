@@ -13,6 +13,9 @@
   --btn-text: #d9f8ff; /* button text */
   --btn-op-bg: #112737; /* operator button */
   --btn-eq-bg: #0b6cff; /* equal button */
+  --neon-green: #3aff99;
+  --neon-blue: #6bd4ff;
+  --neon-red: #ff6b6b;
 }
 
 /* Keep CSS variables; font variables are provided by layout font imports */
@@ -238,5 +241,67 @@ body {
 .fixed .translate-x-0 {
   transform: translateX(0);
 }
+
+/* Memoji (memory game) card styles */
+.memoji-root { color: var(--foreground); }
+.memoji-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+.memoji-card {
+  background: var(--card-bg);
+  border-radius: 8px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  border: 1px solid rgba(255,255,255,0.04);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+.memoji-card { perspective: 600px; position: relative; overflow: hidden; }
+.memoji-card .memoji-card-inner { width: 100%; height: 100%; display:flex; align-items:center; justify-content:center; position: relative; }
+.memoji-card-front { font-size: 28px; z-index: 20; display: flex; align-items: center; justify-content: center; }
+.memoji-card-back { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11,108,255,0.08), rgba(7,35,68,0.08)); border-radius: 8px; z-index: 10; }
+
+/* selection highlight */
+.memoji-card.selected { box-shadow: 0 8px 30px rgba(11,108,255,0.18); transform: translateY(-4px); border-color: rgba(11,108,255,0.4); }
+
+/* matched stays highlighted */
+.memoji-card.matched { background: linear-gradient(180deg, rgba(11,108,255,0.06), rgba(11,108,255,0.02)); border-color: rgba(11,108,255,0.5); box-shadow: 0 10px 28px rgba(11,108,255,0.18); }
+
+/* hide front (emoji) when not flipped/matched */
+.memoji-card .memoji-card-front { visibility: hidden; }
+.memoji-card.selected .memoji-card-front,
+.memoji-card.matched .memoji-card-front { visibility: visible; }
+
+@media (min-width: 641px) {
+  .memoji-card { height: 92px; font-size: 34px; }
+}
+
+/* Budget mini-app styles */
+.budget-root { color: var(--foreground); }
+.budget-topbar { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04); }
+.text-neon-green { color: var(--neon-green); font-weight: 700; }
+.text-neon-blue { color: var(--neon-blue); font-weight: 700; }
+.text-neon-red { color: var(--neon-red); font-weight: 700; }
+.budget-form input { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03); color: var(--foreground); }
+.expenses-list { background: rgba(255,255,255,0.01); }
+
+/* Budget responsive tweaks */
+.budget-input { font-size: 1rem; }
+.expense-name { min-width: 110px; }
+.expense-amount { width: 84px; }
+
+@media (max-width: 640px) {
+  .expense-name { min-width: 70px; font-size: 0.95rem; }
+  .expense-amount { width: 68px; font-size: 0.95rem; }
+  .expenses-list { max-height: 42vh; }
+}
+
+/* World clock responsive grid: 2 columns on desktop, 1 column on mobile */
+.world-clock-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+@media (max-width: 640px) {
+  .world-clock-grid { grid-template-columns: 1fr; }
+}
+
+
 
 
