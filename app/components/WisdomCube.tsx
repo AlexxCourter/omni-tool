@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
-import type { View } from "../types";
+import { useState } from "react";
 
 const AFFIRMATIVE = [
   "Yes — the cosmos quietly concurs.",
@@ -91,7 +90,7 @@ export default function WisdomCube({ onClose }: { onClose?: () => void }) {
       </div>
 
       <div className="mt-2 text-sm opacity-70 text-center max-w-xl">
-        The cube's wisdom is too powerful for anything simpler than a yes or no question. Anything more would corrupt our feeble minds.
+        The cube&apos;s wisdom is too powerful for anything simpler than a yes or no question. Anything more would corrupt our feeble minds.
       </div>
 
       {/* overlay is the primary live region now; remove duplicate inline status text */}
