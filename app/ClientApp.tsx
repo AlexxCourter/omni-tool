@@ -15,6 +15,7 @@ import Memoji from "./components/Memoji";
 import Budget from "./components/Budget";
 import Checkers from "./components/Checkers";
 import ChessComponent from "./components/Chess";
+import WisdomCube from "./components/WisdomCube";
 import type { View } from "./types";
 
 export default function ClientApp({ children }: { children: React.ReactNode }) {
@@ -36,6 +37,7 @@ export default function ClientApp({ children }: { children: React.ReactNode }) {
           {view === "budget" && <Budget />}
           {view === "checkers" && <Checkers />}
           {view === "chess" && <ChessComponent />}
+          {view === "wisdomcube" && <WisdomCube />}
           {view === "worldclock" && <WorldClock />}
           {/* fallback: show children when no view matched */}
           {!["calculator", "notebook"].includes(view) && children}

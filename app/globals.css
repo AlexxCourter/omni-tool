@@ -213,6 +213,12 @@ body {
   }
 }
 
+/* Make header branding smaller on small screens to avoid clutter */
+@media (max-width: 640px) {
+  header .font-bold.text-lg { font-size: 1rem; }
+  header .logo-img { height: 16px; }
+}
+
 /* Bottom quick menu */
 .bottom-quick-menu {
   pointer-events: auto;
@@ -397,6 +403,68 @@ body {
 @media (max-width: 640px) {
   .world-clock-grid { grid-template-columns: 1fr; }
 }
+
+/* Wisdom Cube styles */
+.wisdom-root { display: flex; align-items: center; justify-content: center; flex-direction: column; }
+.cube-stage { width: 160px; height: 160px; perspective: 800px; display:flex; align-items:center; justify-content:center; }
+.cube { width: 120px; height: 120px; position: relative; transform-style: preserve-3d; transition: transform 1000ms cubic-bezier(0.2,0.9,0.2,1); }
+.cube.spin { transform: rotateX(720deg) rotateY(720deg) rotateZ(360deg); transition-duration: 1200ms; }
+.cube.settle { transform: rotateX(20deg) rotateY(20deg); }
+.cube-face { position: absolute; width: 100%; height: 100%; display:flex; align-items:center; justify-content:center; border-radius:8px; font-size:28px; font-weight:700; color: white; }
+.cube-face-front { background: linear-gradient(180deg,#0b6cff,#0647a6); transform: translateZ(60px); }
+.cube-face-back { background: linear-gradient(180deg,#3aff99,#1fbf6b); transform: rotateY(180deg) translateZ(60px); }
+.cube-face-left { background: linear-gradient(180deg,#7be8ff,#2fa6c9); transform: rotateY(-90deg) translateZ(60px); }
+.cube-face-right { background: linear-gradient(180deg,#ff6b6b,#c14b4b); transform: rotateY(90deg) translateZ(60px); }
+.cube-face-top { background: linear-gradient(180deg,#f7ff7b,#c9c84b); transform: rotateX(90deg) translateZ(60px); }
+.cube-face-bottom { background: linear-gradient(180deg,#b28eff,#7b4fb8); transform: rotateX(-90deg) translateZ(60px); }
+
+.cube-icon { background: linear-gradient(135deg,#0b6cff,#3aff99); border-radius:6px; box-shadow: 0 6px 18px rgba(0,0,0,0.4); transform: rotate3d(0.4,0.6,0.2,20deg); }
+
+/* overlay that sits on top of the cube when an answer is revealed */
+.cube-overlay {
+  position: absolute;
+  inset: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index: 90;
+  pointer-events: auto;
+}
+.cube-overlay-card {
+  background: rgba(2,6,23,0.96);
+  color: var(--foreground);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  box-shadow: 0 10px 36px rgba(0,0,0,0.6);
+  text-align: center;
+  line-height: 1.08;
+  /* keep the overlay readable on very small screens, scale between 16px and 28px */
+  font-size: clamp(16px, 3.8vw, 28px);
+  max-width: calc(100vw - 48px);
+  word-break: break-word;
+}
+
+/* subtle fade + pop for overlay reveal */
+.cube-overlay-card {
+  transform: translateY(6px) scale(0.98);
+  opacity: 0;
+  animation: overlay-pop 320ms ease-out forwards;
+}
+
+/* WisdomCube button sizing: ensure both states fit on one line and use the same font-size */
+.wisdom-root .btn {
+  font-size: 0.92rem; /* slightly smaller than default */
+  padding: 8px 12px; /* a touch less horizontal padding to help long text fit */
+  white-space: nowrap;
+}
+
+@keyframes overlay-pop {
+  0% { opacity: 0; transform: translateY(6px) scale(0.98); }
+  60% { opacity: 1; transform: translateY(-6px) scale(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 
 
 

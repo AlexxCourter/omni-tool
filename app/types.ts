@@ -14,4 +14,4 @@ export interface NoteBook {
   notes: Note[];
 }
 
-export type View = "dashboard" | "calculator" | "notebook" | "counter" | "dice" | "worldclock" | "quickmarks" | "soundboard" | "memoji" | "budget" | "checkers" | "chess";
+export type View = "dashboard" | "calculator" | "notebook" | "counter" | "dice" | "worldclock" | "quickmarks" | "soundboard" | "memoji" | "budget" | "checkers" | "chess" | "wisdomcube";

@@ -110,6 +110,15 @@ export default function Dashboard({ setView }: { setView: React.Dispatch<React.S
           <img src="/chess.png" alt="Chess" className="w-20 h-20 object-contain" />
           <div className="font-semibold">Chess</div>
         </button>
+
+        <button
+          onClick={() => setView("wisdomcube")}
+          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
+          aria-label="Open Wisdom Cube"
+        >
+          <img src="/wisdomcube.png" alt="Wisdom Cube" className="w-20 h-20 object-contain" />
+          <div className="font-semibold">Wisdom Cube</div>
+        </button>
       </div>
     </div>
   );
