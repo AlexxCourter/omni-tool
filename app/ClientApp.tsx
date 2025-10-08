@@ -16,6 +16,7 @@ import Budget from "./components/Budget";
 import Checkers from "./components/Checkers";
 import ChessComponent from "./components/Chess";
 import WisdomCube from "./components/WisdomCube";
+import OmniPet from "./components/OmniPet";
 import type { View } from "./types";
 
 export default function ClientApp({ children }: { children: React.ReactNode }) {
@@ -38,6 +39,7 @@ export default function ClientApp({ children }: { children: React.ReactNode }) {
           {view === "checkers" && <Checkers />}
           {view === "chess" && <ChessComponent />}
           {view === "wisdomcube" && <WisdomCube />}
+          {view === "omnipet" && <OmniPet />}
           {view === "worldclock" && <WorldClock />}
           {/* fallback: show children when no view matched */}
           {!["calculator", "notebook"].includes(view) && children}

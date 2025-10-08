@@ -308,6 +308,27 @@ body {
 .move-target { box-shadow: inset 0 0 0 3px rgba(59, 255, 153, 0.12); }
 .checkers-board .square-button { border: none; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
 
+/* Omni-pet overlay emoji pop animation */
+.emoji-pop {
+  animation: emoji-pop 360ms cubic-bezier(.2,.9,.3,1);
+  transform-origin: 100% 0%; /* pop from top-right */
+}
+@keyframes emoji-pop {
+  0% { opacity: 0; transform: scale(0.6) translateY(-6px); }
+  60% { opacity: 1; transform: scale(1.12) translateY(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* exit: quick scale-down + fade, keep transform-origin consistent */
+.emoji-pop-exit {
+  animation: emoji-pop-exit 220ms cubic-bezier(.2,.9,.3,1) forwards;
+  transform-origin: 100% 0%;
+}
+@keyframes emoji-pop-exit {
+  0% { opacity: 1; transform: scale(1) translateY(0); }
+  100% { opacity: 0; transform: scale(0.6) translateY(-6px); }
+}
+
 /* Chess board styles (reuse similar sizing) */
 .chess-board { width: 100%; max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(8, 1fr); aspect-ratio: 1 / 1; grid-auto-rows: 1fr; }
 /* Promotion modal: use an opaque, high-contrast panel so the promotion chooser is readable */
@@ -464,6 +485,17 @@ body {
   60% { opacity: 1; transform: translateY(-6px) scale(1.02); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* Omni-pet specific styles */
+.omnipet-root { display:flex; flex-direction:column; align-items:center; }
+.omnipet-sprite { width: 12rem; height: 12rem; border-radius: 12px; display:flex; align-items:center; justify-content:center; }
+.omnipet-cards button { min-width: 56px; min-height: 56px; font-size: 24px; }
+
+/* modal/bg used by OmniPet */
+.bg-var { background: var(--background); color: var(--foreground); }
+.z-80 { z-index: 80; }
+.bg-black\/60 { background: rgba(0,0,0,0.6); }
+.bg-black\/10 { background: rgba(0,0,0,0.1); }
 
 
 

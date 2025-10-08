@@ -37,6 +37,7 @@ export default function Header({
           <option value="checkers">Checkers</option>
           <option value="chess">Chess</option>
           <option value="wisdomcube">Wisdom Cube</option>
+          <option value="omnipet">Omni-pet</option>
         </select>
       </div>
 
