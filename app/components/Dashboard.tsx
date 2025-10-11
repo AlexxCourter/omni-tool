@@ -11,123 +11,81 @@ export default function Dashboard({ setView }: { setView: React.Dispatch<React.S
         <p className="text-sm opacity-70 mt-2">Quick access to your mini-apps and status at a glance.</p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <button
-          onClick={() => setView("calculator")}
-          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
-          aria-label="Open Calculator"
-        >
-          <img src="/calculator.png" alt="Calculator" className="w-20 h-20 object-contain" />
-          <div className="font-semibold">Calculator</div>
-        </button>
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold">Omni-tools</h2>
+        <p className="text-sm opacity-60">Useful utilities and productivity helpers</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-3">
+          <button onClick={() => setView("calculator")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Calculator">
+            <img src="/calculator.png" alt="Calculator" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Calculator</div>
+          </button>
 
-        <button
-          onClick={() => setView("notebook")}
-          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
-          aria-label="Open Notebook"
-        >
-          <img src="/notebook.png" alt="Notebook" className="w-20 h-20 object-contain" />
-          <div className="font-semibold">Notebook</div>
-        </button>
+          <button onClick={() => setView("counter")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Counter">
+            <img src="/counter.png" alt="Counter" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Counter</div>
+          </button>
 
-        <button
-          onClick={() => setView("worldclock")}
-          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
-          aria-label="Open World Clock"
-        >
-          <img src="/clock.png" alt="World Clock" className="w-20 h-20 object-contain" />
-          <div className="font-semibold">World Clock</div>
-        </button>
+          <button onClick={() => setView("notebook")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Notebook">
+            <img src="/notebook.png" alt="Notebook" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Notebook</div>
+          </button>
 
-        <button
-          onClick={() => setView("dice")}
-          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
-          aria-label="Open Dice"
-        >
-          <img src="/die.png" alt="Dice" className="w-20 h-20 object-contain" />
-          <div className="font-semibold">Dice</div>
-        </button>
+          <button onClick={() => setView("quickmarks")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Quickmarks">
+            <img src="/quickmark.png" alt="Quickmarks" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Quickmarks</div>
+          </button>
 
-        <button
-          onClick={() => setView("quickmarks")}
-          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
-          aria-label="Open Quickmarks"
-        >
-          <img src="/quickmark.png" alt="Quickmarks" className="w-20 h-20 object-contain" />
-          <div className="font-semibold">Quickmarks</div>
-        </button>
+          <button onClick={() => setView("budget")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Budget">
+            <img src="/budget.png" alt="Budget" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Budget</div>
+          </button>
 
-        <button
-          onClick={() => setView("soundboard")}
-          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
-          aria-label="Open Soundboard"
-        >
-          <img src="/soundboard.png" alt="Soundboard" className="w-20 h-20 object-contain" />
-          <div className="font-semibold">Soundboard</div>
-        </button>
+          <button onClick={() => setView("worldclock")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open World Clock">
+            <img src="/clock.png" alt="World Clock" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">World Clock</div>
+          </button>
+        </div>
+      </div>
 
-        <button
-          onClick={() => setView("counter")}
-          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
-          aria-label="Open Counter"
-        >
-          <img src="/counter.png" alt="Counter" className="w-20 h-20 object-contain" />
-          <div className="font-semibold">Counter</div>
-        </button>
+      <div>
+        <h2 className="text-xl font-semibold">Omni-Games</h2>
+        <p className="text-sm opacity-60">Fun mini-games and playful tools</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-3">
+          <button onClick={() => setView("checkers")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Checkers">
+            <img src="/checkers.png" alt="Checkers" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Checkers</div>
+          </button>
 
-        <button
-          onClick={() => setView("memoji")}
-          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
-          aria-label="Open Memoji"
-        >
-          <img src="/memoji.png" alt="Memoji" className="w-20 h-20 object-contain" />
-          <div className="font-semibold">Memoji</div>
-        </button>
+          <button onClick={() => setView("chess")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Chess">
+            <img src="/chess.png" alt="Chess" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Chess</div>
+          </button>
 
-        <button
-          onClick={() => setView("budget")}
-          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
-          aria-label="Open Budget"
-        >
-          <img src="/budget.png" alt="Budget" className="w-20 h-20 object-contain" />
-          <div className="font-semibold">Budget</div>
-        </button>
+          <button onClick={() => setView("dice")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Dice">
+            <img src="/die.png" alt="Dice" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Dice</div>
+          </button>
 
-        <button
-          onClick={() => setView("checkers")}
-          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
-          aria-label="Open Checkers"
-        >
-          <img src="/checkers.png" alt="Checkers" className="w-20 h-20 object-contain" />
-          <div className="font-semibold">Checkers</div>
-        </button>
+          <button onClick={() => setView("memoji")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Memoji">
+            <img src="/memoji.png" alt="Memoji" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Memoji</div>
+          </button>
 
-        <button
-          onClick={() => setView("chess")}
-          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
-          aria-label="Open Chess"
-        >
-          <img src="/chess.png" alt="Chess" className="w-20 h-20 object-contain" />
-          <div className="font-semibold">Chess</div>
-        </button>
+          <button onClick={() => setView("soundboard")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Soundboard">
+            <img src="/soundboard.png" alt="Soundboard" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Soundboard</div>
+          </button>
 
-        <button
-          onClick={() => setView("wisdomcube")}
-          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
-          aria-label="Open Wisdom Cube"
-        >
-          <img src="/wisdomcube.png" alt="Wisdom Cube" className="w-20 h-20 object-contain" />
-          <div className="font-semibold">Wisdom Cube</div>
-        </button>
+          <button onClick={() => setView("wisdomcube")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Wisdom Cube">
+            <img src="/wisdomcube.png" alt="Wisdom Cube" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Wisdom Cube</div>
+          </button>
 
-        <button
-          onClick={() => setView("omnipet")}
-          className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2"
-          aria-label="Open Omni-pet"
-        >
-          <img src="/omnipet.png" alt="Omni-pet" className="w-20 h-20 object-contain" />
-          <div className="font-semibold">Omni-pet</div>
-        </button>
+          <button onClick={() => setView("omnipet")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Omni-pet">
+            <img src="/omnipet.png" alt="Omni-pet" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Omni-pet</div>
+          </button>
+        </div>
       </div>
     </div>
   );

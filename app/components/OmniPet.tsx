@@ -25,7 +25,10 @@ export default function OmniPet() {
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [overlayKey, setOverlayKey] = useState(0);
   const [showStatus, setShowStatus] = useState(false);
-  const [playCards, setPlayCards] = useState<string[] | null>(null);
+  // playDeck contains the hidden emoji positions; playRevealed toggles reveal
+  const [playDeck, setPlayDeck] = useState<string[] | null>(null);
+  const [playRevealed, setPlayRevealed] = useState(false);
+  const [selectedCard, setSelectedCard] = useState<number | null>(null);
   const [showNameModal, setShowNameModal] = useState(false);
   const [nameInput, setNameInput] = useState("");
   const [spriteIndex, setSpriteIndex] = useState(0);
@@ -34,6 +37,84 @@ export default function OmniPet() {
   const overlayRemoveRef = useRef<number | null>(null);
   const OVERLAY_EXIT_MS = 220;
   const OVERLAY_DEFAULT_MS = 900;
+  // game selection: 'oldmaid' (cards), 'fetch' (timing), 'random' (fallback)
+  const [selectedGame, setSelectedGame] = useState<'oldmaid' | 'fetch' | 'rps'>('oldmaid');
+  // fetch game state
+  const [fetchActive, setFetchActive] = useState(false);
+  const [fetchIndicator, setFetchIndicator] = useState(0); // percentage 0-100
+  const fetchDirRef = useRef(1);
+  const fetchIntervalRef = useRef<number | null>(null);
+  const [fetchGreenStart, setFetchGreenStart] = useState(30); // percent
+  const [fetchGreenWidth, setFetchGreenWidth] = useState(15); // percent
+  const FETCH_SPEED = 0.8; // percent per tick
+  // RPS state
+  const RPS_CHOICES = ['🪨','📃','✂️'];
+  const [rpsPetChoice, setRpsPetChoice] = useState<string | null>(null);
+  const [rpsUserChoice, setRpsUserChoice] = useState<string | null>(null);
+  const [rpsRevealed, setRpsRevealed] = useState(false);
+  // activeGame: null when no game tray is open; selectedGame is just the choice in status
+  const [activeGame, setActiveGame] = useState<'oldmaid' | 'fetch' | 'rps' | null>(null);
+
+  // helper: show an overlay emoji in the top-right for a short time
+  function showOverlay(emoji: string, ms = OVERLAY_DEFAULT_MS) {
+    if (overlayHideRef.current) { window.clearTimeout(overlayHideRef.current); overlayHideRef.current = null; }
+    if (overlayRemoveRef.current) { window.clearTimeout(overlayRemoveRef.current); overlayRemoveRef.current = null; }
+    setOverlayEmoji(emoji);
+    setOverlayVisible(true);
+    setOverlayKey((k) => k + 1);
+    overlayHideRef.current = window.setTimeout(() => {
+      setOverlayVisible(false);
+    }, ms);
+    overlayRemoveRef.current = window.setTimeout(() => {
+      setOverlayEmoji(null);
+    }, ms + OVERLAY_EXIT_MS);
+  }
+
+  // helper: simple array shuffle (Fisher-Yates)
+  function shuffle<T>(arr: T[]): T[] {
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  // helper: age in days from ISO birth date
+  function ageDays(birthIso: string) {
+    const b = new Date(birthIso);
+    const now = new Date();
+    const diff = now.getTime() - b.getTime();
+    return Math.floor(diff / (1000 * 60 * 60 * 24));
+  }
+
+  // helper: age in days and hours
+  function ageDaysHours(birthIso: string) {
+    const b = new Date(birthIso);
+    const now = new Date();
+    const diff = now.getTime() - b.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    return { days, hours };
+  }
+
+  // pick a card in the old-maid deck
+  function pickCardIndex(i: number) {
+    if (!playDeck || playRevealed) return;
+    setSelectedCard(i);
+    setPlayRevealed(true);
+    const val = playDeck[i];
+    if (pet) {
+      if (val === '🤡') {
+        setPet({ ...pet, happiness: Math.min(1000, pet.happiness + 10) });
+        showOverlay('🎉', 900);
+      } else {
+        setPet({ ...pet, happiness: Math.min(1000, pet.happiness + 3) });
+        showOverlay('🙂', 900);
+      }
+    }
+    setTimeout(() => { setPlayDeck(null); setPlayRevealed(false); setSelectedCard(null); }, 1200);
+  }
 
   useEffect(() => {
     try {
@@ -99,71 +180,100 @@ export default function OmniPet() {
   }
 
   function play() {
-    // start the 3-card mini-game
-    setPlayCards(shuffle(["♠️", "♥️", "🤡"]));
+    // open the selected game as the active game (player must hit Play)
+    setActiveGame(selectedGame);
+    if (selectedGame === 'fetch') {
+      // initialize fetch area randomly and start indicator
+      const start = 8 + Math.floor(Math.random() * 70); // 8..77
+      const width = 8 + Math.floor(Math.random() * 14); // 8..21
+      setFetchGreenStart(Math.max(0, Math.min(90, start)));
+      setFetchGreenWidth(Math.max(6, Math.min(40, width)));
+      setFetchIndicator(0);
+      fetchDirRef.current = 1;
+      setFetchActive(true);
+      // start moving indicator
+      if (fetchIntervalRef.current) window.clearInterval(fetchIntervalRef.current);
+      fetchIntervalRef.current = window.setInterval(() => {
+        setFetchIndicator((pos) => {
+          let next = pos + fetchDirRef.current * FETCH_SPEED;
+          if (next >= 100) { next = 100; fetchDirRef.current = -1; }
+          if (next <= 0) { next = 0; fetchDirRef.current = 1; }
+          return next;
+        });
+      }, 16);
+      // clear any card deck
+      setPlayDeck(null);
+      setPlayRevealed(false);
+      setSelectedCard(null);
+      return;
+      }
+      if (selectedGame === 'rps') {
+        // pet picks randomly, show question card above user cards
+        const choice = RPS_CHOICES[Math.floor(Math.random() * RPS_CHOICES.length)];
+        setRpsPetChoice(choice);
+        setRpsUserChoice(null);
+        setRpsRevealed(false);
+          // clear any fetch intervals
+          if (fetchIntervalRef.current) { window.clearInterval(fetchIntervalRef.current); fetchIntervalRef.current = null; }
+        // clear card deck if present
+        setPlayDeck(null);
+        return;
+    }
+    // default: old-maid cards
+    setPlayDeck(shuffle(["♠️", "♥️", "🤡"]));
+    setPlayRevealed(false);
+    setSelectedCard(null);
   }
 
-  function pickCard(emoji: string) {
-    if (!pet || !playCards) return;
-    // reveal chosen
-    if (emoji === "🤡") {
-      setPet({ ...pet, happiness: Math.min(1000, pet.happiness + 5) });
-      showOverlay("😄", 600);
+  function stopFetch() {
+    // stop indicator and evaluate
+    if (fetchIntervalRef.current) { window.clearInterval(fetchIntervalRef.current); fetchIntervalRef.current = null; }
+    setFetchActive(false);
+    const pos = fetchIndicator;
+    const greenStart = fetchGreenStart;
+    const greenEnd = Math.min(100, fetchGreenStart + fetchGreenWidth);
+    const success = pos >= greenStart && pos <= greenEnd;
+    if (success) {
+      // pass
+      if (pet) setPet({ ...pet, happiness: Math.min(1000, pet.happiness + 10) });
+      showOverlay('😄', 900);
     } else {
-      showOverlay("😔", 600);
+      if (pet) setPet({ ...pet, happiness: Math.min(1000, pet.happiness + 3) });
+      showOverlay('😔', 900);
     }
-    // keep only the picked card visible, hide after a moment
-    setPlayCards([emoji]);
-    setTimeout(() => { setPlayCards(null); }, 900);
+    // reset indicator after short delay
+    setTimeout(() => setFetchIndicator(0), 800);
+    // close the game tray after short delay so UI resets
+    setTimeout(() => setActiveGame(null), 900);
   }
 
-  // show overlay with managed enter/exit so we can animate out before removal
-  function showOverlay(emoji: string, displayMs = OVERLAY_DEFAULT_MS) {
-    // clear existing timers
-    if (overlayHideRef.current) window.clearTimeout(overlayHideRef.current);
-    if (overlayRemoveRef.current) window.clearTimeout(overlayRemoveRef.current);
-    setOverlayEmoji(emoji);
-    setOverlayVisible(true);
-    setOverlayKey((k) => k + 1);
-    // schedule hide (start exit animation)
-    overlayHideRef.current = window.setTimeout(() => {
-      setOverlayVisible(false);
-      // remove element after exit animation
-      overlayRemoveRef.current = window.setTimeout(() => setOverlayEmoji(null), OVERLAY_EXIT_MS);
-    }, displayMs);
-  }
-
-  // cleanup timers on unmount
-  useEffect(() => {
-    return () => {
-      if (overlayHideRef.current) window.clearTimeout(overlayHideRef.current);
-      if (overlayRemoveRef.current) window.clearTimeout(overlayRemoveRef.current);
-    };
-  }, []);
-
-  function shuffle<T>(arr: T[]) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
-  function ageDays(birthIso: string) {
-    const b = new Date(birthIso);
-    const now = new Date();
-    const diff = now.getTime() - b.getTime();
-    return Math.floor(diff / (1000 * 60 * 60 * 24));
-  }
-
-  function ageDaysHours(birthIso: string) {
-    const b = new Date(birthIso);
-    const now = new Date();
-    const diff = now.getTime() - b.getTime();
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    return { days, hours };
+  function pickRps(userChoice: string) {
+    if (!pet || !rpsPetChoice) return;
+    setRpsUserChoice(userChoice);
+    // reveal pet choice after a short delay to allow user selection animation
+    setTimeout(() => {
+      setRpsRevealed(true);
+      // evaluate
+      const petChoice = rpsPetChoice;
+      const user = userChoice;
+      const beats = (a: string, b: string) => (a === '🪨' && b === '✂️') || (a === '📃' && b === '🪨') || (a === '✂️' && b === '📃');
+      if (petChoice === user) {
+        // tie
+        setPet({ ...pet, happiness: Math.min(1000, pet.happiness + 5) });
+        showOverlay('😊', 900);
+      } else if (beats(petChoice, user)) {
+        // pet wins
+        setPet({ ...pet, happiness: Math.min(1000, pet.happiness + 10) });
+        showOverlay('😄', 900);
+      } else {
+        // pet loses
+        setPet({ ...pet, happiness: Math.min(1000, pet.happiness + 1) });
+        showOverlay('😔', 900);
+      }
+      // clear after a moment and close the game tray
+      setTimeout(() => { setRpsPetChoice(null); setRpsUserChoice(null); setRpsRevealed(false); setActiveGame(null); }, 1400);
+    }, 300);
+    // finished RPS evaluation
   }
 
   // apply offline ticks for hunger/cleanliness based on last_tick or birth
@@ -286,14 +396,67 @@ export default function OmniPet() {
             <button onClick={play} className="p-2 border rounded">Play</button>
           </div>
 
-          {/* play cards */}
-          {playCards && (
-            <div className="w-full mt-4 flex items-center justify-center gap-4">
-              {playCards.map((c, i) => (
-                <button key={i} onClick={() => pickCard(c)} className="p-4 bg-var card-shadow rounded">{c === '♠️' || c === '♥️' || c === '🤡' ? c : ' '}</button>
-              ))}
-            </div>
-          )}
+          {/* play area (cards appear below the pet window) */}
+          <div className="w-full mt-2">
+            {activeGame === 'oldmaid' && (
+              playDeck ? (
+                <div className="w-full mt-4 flex items-center justify-center gap-4">
+                  {playDeck.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => pickCardIndex(i)}
+                      className={`omnipet-card w-20 h-28 transform transition-all duration-150 ${selectedCard === i && playRevealed ? 'ring-2 ring-indigo-400 scale-105' : ''}`}
+                      aria-label={`Card ${i + 1}`}
+                      aria-pressed={selectedCard === i}
+                    >
+                      <div className={`omnipet-card-inner ${playRevealed ? 'flipped' : ''}`}>
+                        <div className="omnipet-card-face omnipet-card-front p-2 rounded">🂠</div>
+                        <div className="omnipet-card-face omnipet-card-back p-2 rounded text-2xl">{playDeck[i]}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="w-full mt-4 text-center text-sm opacity-70">Press Play to start a card game</div>
+              )
+            )}
+
+            {activeGame === 'fetch' && (
+              <div>
+                <div className="mb-2 text-sm">Fetch Target</div>
+                <div className="relative h-6 bg-gray-800 rounded overflow-hidden">
+                  <div style={{ position: 'absolute', left: `${fetchGreenStart}%`, width: `${fetchGreenWidth}%`, top: 0, bottom: 0, background: 'linear-gradient(90deg,#34d399,#10b981, #34d399)' }} />
+                  <div style={{ position: 'absolute', left: `${fetchIndicator}%`, top: 0, bottom: 0, width: '2px', background: '#f59e0b', transform: 'translateX(-1px)' }} />
+                </div>
+                <div className="mt-2 flex gap-2">
+                  {!fetchActive ? (
+                    <button onClick={play} className="px-3 py-1 border rounded">Start</button>
+                  ) : (
+                    <button onClick={stopFetch} className="px-3 py-1 border rounded bg-yellow-400">FETCH</button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {activeGame === 'rps' && (
+              <div>
+                <div className="mb-2 text-sm">Rock Paper Scissors</div>
+                <div className="flex items-center justify-center mb-2">
+                  <div className={`omnipet-card w-12 h-16 mr-0`}> 
+                    <div className={`omnipet-card-inner ${rpsRevealed ? 'flipped' : ''}`}>
+                      <div className="omnipet-card-face omnipet-card-front p-1 rounded">❓</div>
+                      <div className="omnipet-card-face omnipet-card-back p-1 rounded text-2xl">{rpsPetChoice || '❓'}</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center gap-3">
+                  {RPS_CHOICES.map((c, i) => (
+                    <button key={i} onClick={() => pickRps(c)} className="omnipet-card w-20 h-28 bg-var card-shadow rounded flex items-center justify-center text-3xl">{c}</button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* status drawer */}
           {showStatus && (
@@ -303,7 +466,7 @@ export default function OmniPet() {
               <div className="w-full bg-gray-900 h-4 rounded overflow-hidden mb-3">
                 <div style={{ width: `${pet.hunger}%`, background: 'linear-gradient(90deg,#f59e0b,#f97316)' , height: '100%'}}/>
                 <div className="absolute w-full h-4 flex">
-                  {[1,2,3].map((i)=> <div key={i} style={{ width: '25%', borderLeft: '1px solid rgba(255,255,255,0.06)' }}/>) }
+                  {[1,2,3].map((i)=> <div key={i} style={{ width: '25%', borderLeft: '1px solid rgba(255,255,255,0.12)' }}/>) }
                 </div>
               </div>
 
@@ -311,16 +474,28 @@ export default function OmniPet() {
               <div className="w-full bg-gray-900 h-4 rounded overflow-hidden mb-3">
                 <div style={{ width: `${pet.cleanliness}%`, background: 'linear-gradient(90deg,#60a5fa,#3b82f6)' , height: '100%'}}/>
                 <div className="absolute w-full h-4 flex">
-                  {[1,2,3].map((i)=> <div key={i} style={{ width: '25%', borderLeft: '1px solid rgba(255,255,255,0.06)' }}/>) }
+                  {[1,2,3].map((i)=> <div key={i} style={{ width: '25%', borderLeft: '1px solid rgba(255,255,255,0.12)' }}/>) }
                 </div>
               </div>
 
               <div className="mb-2">Happiness</div>
-              <div className="w-full bg-gray-900 h-4 rounded overflow-hidden mb-1">
-                <div style={{ width: `${Math.min(100, Math.floor(pet.happiness/10))}%`, background: 'linear-gradient(90deg,#34d399,#10b981)' , height: '100%'}}/>
-                <div className="absolute w-full h-4 flex">
-                  {Array.from({length:10}).map((_,i)=> <div key={i} style={{ width: '10%', borderLeft: '1px solid rgba(255,255,255,0.04)' }}/>) }
+              <div className="flex items-center gap-3">
+                <div className="flex-1">
+                  <div className="w-full bg-gray-900 h-4 rounded overflow-hidden mb-1 relative">
+                    <div style={{ width: `${Math.min(100, Math.floor(pet.happiness/10))}%`, background: 'linear-gradient(90deg,#34d399,#10b981)' , height: '100%'}}/>
+                    <div className="absolute w-full h-4 flex">
+                      {Array.from({length:10}).map((_,i)=> <div key={i} style={{ width: '10%', borderLeft: '1px solid rgba(255,255,255,0.12)' }}/>) }
+                    </div>
+                  </div>
                 </div>
+                <div className="text-sm font-medium">{pet.happiness}</div>
+              </div>
+
+              {/* game selection buttons only (game UI appears under the pet when Play is used) */}
+              <div className="mt-3 flex gap-2">
+                <button className={`px-3 py-1 rounded border ${selectedGame === 'oldmaid' ? 'bg-var ring-2 ring-indigo-400' : ''}`} onClick={() => setSelectedGame('oldmaid')}>Old-maid</button>
+                <button className={`px-3 py-1 rounded border ${selectedGame === 'fetch' ? 'bg-var ring-2 ring-indigo-400' : ''}`} onClick={() => setSelectedGame('fetch')}>Fetch</button>
+                <button className={`px-3 py-1 rounded border ${selectedGame === 'rps' ? 'bg-var ring-2 ring-indigo-400' : ''}`} onClick={() => setSelectedGame('rps')}>RPS</button>
               </div>
             </div>
           )}
