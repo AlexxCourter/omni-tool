@@ -22,7 +22,7 @@ export default function Header({
           aria-label="Select mini app"
           value={view}
           onChange={(e) => setView(e.target.value as View)}
-          className="px-3 py-1 border rounded"
+          className="px-3 py-1 border rounded mini-app-select"
         >
           <option value="dashboard">Dashboard</option>
           <option value="calculator">Calculator</option>
@@ -38,6 +38,15 @@ export default function Header({
           <option value="chess">Chess</option>
           <option value="wisdomcube">Wisdom Cube</option>
           <option value="omnipet">Omni-pet</option>
+          <option value="omniwheel">Omni Wheel</option>
+          <option value="colorpicker">Color Picker</option>
+          <option value="contrast">Contrast Checker</option>
+          <option value="sketch">Sketch Pad</option>
+          <option value="gridoverlay">Grid Overlay</option>
+          <option value="value">Value Checker</option>
+          <option value="savings">Savings Growth</option>
+          <option value="loan">Loan Calculator</option>
+          <option value="roi">ROI Calculator</option>
         </select>
       </div>
 

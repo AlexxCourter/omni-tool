@@ -76,8 +76,13 @@ export default function BottomQuickMenu({ setView }: { setView: React.Dispatch<R
       </div>
 
       {/* Drawer on right */}
-      <div className={`fixed top-0 right-0 bottom-0 w-[320px] z-60 transform transition-transform ${open ? "translate-x-0" : "translate-x-full"}`} style={{ background: 'var(--background)', color: 'var(--foreground)', boxShadow: '0 12px 40px rgba(0,0,0,0.6)' }}>
+      <div
+        className={`fixed top-0 right-0 bottom-0 w-[320px] z-60 transform transition-transform ${open ? "translate-x-0" : "translate-x-full"}`}
+        style={{ background: 'var(--background)', color: 'var(--foreground)', boxShadow: '0 12px 40px rgba(0,0,0,0.6)', display: 'flex', flexDirection: 'column' }}
+      >
         <div style={{ height: 4, background: 'var(--accent)' }} />
+
+        {/* header */}
         <div className="p-4 border-b flex items-center justify-between" style={{ borderColor: 'rgba(255,255,255,0.03)' }}>
           <div>
             <div className="font-semibold">Add up to 4 to your quick select menu</div>
@@ -88,38 +93,41 @@ export default function BottomQuickMenu({ setView }: { setView: React.Dispatch<R
           </div>
         </div>
 
-        <div className="p-4 grid grid-cols-3 gap-3">
-          {AVAILABLE.map((a) => {
-            const idx = selected.indexOf(a.id);
-            return (
-              <button
-                key={a.id}
-                onClick={() => toggleApp(a.id)}
-                className="relative p-2 border rounded flex flex-col items-center gap-1"
-                style={{ opacity: idx !== -1 ? 0.5 : 1 }}
-              >
-                {a.icon ? (
-                  <img src={a.icon} alt={a.label} className="w-10 h-10 object-contain" />
-                ) : (
-                  <div className="w-10 h-10 bg-gray-700 rounded flex items-center justify-center text-white">{a.label[0]}</div>
-                )}
-                <div className="text-xs opacity-70">{a.label}</div>
-                {idx !== -1 && (
-                  <div className="absolute -top-2 -right-2 bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">{idx + 1}</div>
-                )}
-              </button>
-            );
-          })}
-        </div>
+        {/* scrollable content */}
+        <div style={{ flex: 1, overflowY: 'auto', padding: 16 }}>
+          <div className="grid grid-cols-3 gap-3">
+            {AVAILABLE.map((a) => {
+              const idx = selected.indexOf(a.id);
+              return (
+                <button
+                  key={a.id}
+                  onClick={() => toggleApp(a.id)}
+                  className="relative p-2 border rounded flex flex-col items-center gap-1"
+                  style={{ opacity: idx !== -1 ? 0.5 : 1 }}
+                >
+                  {a.icon ? (
+                    <img src={a.icon} alt={a.label} className="w-10 h-10 object-contain" />
+                  ) : (
+                    <div className="w-10 h-10 bg-gray-700 rounded flex items-center justify-center text-white">{a.label[0]}</div>
+                  )}
+                  <div className="text-xs opacity-70">{a.label}</div>
+                  {idx !== -1 && (
+                    <div className="absolute -top-2 -right-2 bg-blue-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs">{idx + 1}</div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
 
-        <div className="p-4 border-t">
-          <div className="font-semibold">Preview</div>
-          <div className="mt-2 flex gap-2">
-            {selected.map((s, i) => (
-              <button key={s} onClick={() => setView(s)} className="p-2 border rounded">
-                {s}
-              </button>
-            ))}
+          <div className="p-4 border-t mt-4" style={{ borderColor: 'rgba(255,255,255,0.03)' }}>
+            <div className="font-semibold">Preview</div>
+            <div className="mt-2 flex gap-2 flex-wrap">
+              {selected.map((s) => (
+                <button key={s} onClick={() => setView(s)} className="p-2 border rounded">
+                  {s}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>

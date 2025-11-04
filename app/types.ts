@@ -14,4 +14,27 @@ export interface NoteBook {
   notes: Note[];
 }
 
-export type View = "dashboard" | "calculator" | "notebook" | "counter" | "dice" | "worldclock" | "quickmarks" | "soundboard" | "memoji" | "budget" | "checkers" | "chess" | "wisdomcube" | "omnipet";
+export type View =
+  | "dashboard"
+  | "calculator"
+  | "notebook"
+  | "counter"
+  | "dice"
+  | "worldclock"
+  | "quickmarks"
+  | "soundboard"
+  | "memoji"
+  | "budget"
+  | "checkers"
+  | "chess"
+  | "wisdomcube"
+  | "omnipet"
+  | "omniwheel"
+  | "colorpicker"
+  | "contrast"
+  | "sketch"
+  | "gridoverlay"
+  | "value"
+  | "savings"
+  | "loan"
+  | "roi";

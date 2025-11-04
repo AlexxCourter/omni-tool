@@ -16,6 +16,10 @@
   --neon-green: #3aff99;
   --neon-blue: #6bd4ff;
   --neon-red: #ff6b6b;
+  /* slightly darker background for dropdowns / menus
+     Use a manual fallback color for older browsers and prefer color-mix when available */
+  --dropdown-bg-fallback: #05091c; /* darker than --background */
+  --dropdown-bg: color-mix(in srgb, var(--background) 85%, black 15%);
 }
 
 /* Keep CSS variables; font variables are provided by layout font imports */
@@ -219,6 +223,31 @@ body {
   header .logo-img { height: 16px; }
 }
 
+/* Improve contrast for header mini-app dropdown */
+.mini-app-select {
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+  /* Use color-mix when available, otherwise fall back to a slightly darker hard-coded color */
+  background-color: var(--dropdown-bg-fallback);
+  background-color: var(--dropdown-bg);
+  color: var(--foreground);
+  border-color: rgba(255,255,255,0.06);
+}
+
+.mini-app-select option {
+  background-color: var(--dropdown-bg-fallback);
+  background-color: var(--dropdown-bg);
+  color: var(--foreground);
+}
+
+/* On light mode prefer a subtle darker tint of the light background */
+@media (prefers-color-scheme: light) {
+  .mini-app-select,
+  .mini-app-select option {
+    background-color: color-mix(in srgb, var(--background) 92%, black 8%);
+    color: var(--foreground);
+  }
+}
+
 /* Bottom quick menu */
 .bottom-quick-menu {
   pointer-events: auto;
@@ -238,6 +267,18 @@ body {
 
 /* ensure drawer appears above other content */
 .fixed { position: fixed; }
+
+/* Sketch pad responsive container: square on larger screens, taller on small screens */
+.sketch-container {
+  width: 100%;
+  aspect-ratio: 1 / 1; /* square by default */
+}
+@media (max-width: 640px) {
+  .sketch-container { aspect-ratio: 3 / 4; }
+}
+
+/* Palette preview tile used in ColorPicker saved palettes */
+.palette-tile { width: 112px; height: 80px; display: grid; grid-auto-rows: 1fr; overflow: hidden; border: 1px solid rgba(255,255,255,0.03); }
 
 /* Drawer transitions */
 .fixed .translate-x-full {
