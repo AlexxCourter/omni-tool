@@ -1,15 +1,20 @@
 "use client";
 
 import React, { useRef } from "react";
-import { ReactSketchCanvas } from "react-sketch-canvas";
-import artStorage from "../utils/artStorage";
+import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
+import artStorage, { ArtistProject } from "../utils/artStorage";
+
+type SketchRef = {
+  exportImage: (format: string) => Promise<string>;
+  clearCanvas: () => void;
+};
 
 export default function SketchPad(){
-  const ref = useRef<any>(null);
+  const ref = useRef<ReactSketchCanvasRef | null>(null);
   const [color, setColor] = React.useState('#0b6cff');
   const [palette, setPalette] = React.useState<string[]>(['#0b6cff','#ff6b6b','#3aff99','#ffd166']);
-  const [savedSketches, setSavedSketches] = React.useState<any[]>([]);
-  const [savedPalettes, setSavedPalettes] = React.useState<any[]>([]);
+  const [savedSketches, setSavedSketches] = React.useState<ArtistProject[]>([]);
+  const [savedPalettes, setSavedPalettes] = React.useState<ArtistProject[]>([]);
   const [selectedPaletteId, setSelectedPaletteId] = React.useState<string | null>(null);
   const [selectedColorIndex, setSelectedColorIndex] = React.useState<number>(0);
 
@@ -20,6 +25,7 @@ export default function SketchPad(){
 
   async function saveImage(){
     try{
+      if (!ref.current) return alert('Canvas not ready');
       const data = await ref.current.exportImage('png');
       artStorage.saveProject('sketch', 'Sketch ' + new Date().toLocaleString(), { dataUrl: data });
       setSavedSketches(artStorage.listProjectsForApp('sketch'));
@@ -30,7 +36,16 @@ export default function SketchPad(){
   }
 
   function clear(){
+    if (!ref.current) return;
     ref.current.clearCanvas();
+  }
+
+  function extractDataUrl(d: unknown): string | undefined {
+    if (typeof d === 'object' && d !== null && 'dataUrl' in d) {
+      const dv = (d as { dataUrl?: unknown }).dataUrl;
+      if (typeof dv === 'string') return dv;
+    }
+    return undefined;
   }
 
   function applySavedPalette(id?: string){
@@ -39,11 +54,16 @@ export default function SketchPad(){
       return;
     }
     const p = artStorage.getProject('colorpicker', id);
-    if(p?.data?.colors){
-      setPalette(p.data.colors.slice(0,8));
-      setSelectedPaletteId(id);
-      setSelectedColorIndex(0);
-      setColor(p.data.colors[0] || '#000');
+    const d = p?.data;
+    if (typeof d === 'object' && d !== null && 'colors' in d) {
+      const maybe = (d as { colors?: unknown }).colors;
+      if (Array.isArray(maybe)) {
+        const colors = maybe.filter((c): c is string => typeof c === 'string');
+        setPalette(colors.slice(0, 8));
+        setSelectedPaletteId(id);
+        setSelectedColorIndex(0);
+        setColor(colors[0] || '#000');
+      }
     }
   }
 
@@ -69,11 +89,14 @@ export default function SketchPad(){
           <div className="mt-4">
             <h3 className="font-semibold mb-2">Saved Sketches</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              {savedSketches.map(s => (
-                <div key={s.id} className="border rounded overflow-hidden">
-                  <img src={s.data?.dataUrl} alt={s.name} style={{ width: '100%', height: 'auto', display: 'block' }} />
-                </div>
-              ))}
+              {savedSketches.map(s => {
+                const dataUrl = extractDataUrl(s.data);
+                return (
+                  <div key={s.id} className="border rounded overflow-hidden">
+                    {dataUrl ? <img src={dataUrl} alt={s.name} style={{ width: '100%', height: 'auto', display: 'block' }} /> : <div className="p-2 text-sm opacity-60">(invalid image)</div>}
+                  </div>
+                );
+              })}
               {savedSketches.length === 0 && <div className="text-sm opacity-60">No saved sketches</div>}
             </div>
           </div>

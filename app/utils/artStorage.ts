@@ -8,7 +8,7 @@ export type ArtistProject = {
   name: string;
   createdAt: string; // ISO
   updatedAt: string; // ISO
-  data: any; // app-specific payload
+  data: unknown; // app-specific payload
 };
 
 const STORAGE_KEY = "omni_artist_v1";
@@ -48,7 +48,7 @@ export function getProject(app: string, id: string): ArtistProject | undefined {
   return readRaw().projects.find((p) => p.app === app && p.id === id);
 }
 
-export function saveProject(app: string, name: string, data: any, id?: string): ArtistProject {
+export function saveProject(app: string, name: string, data: unknown, id?: string): ArtistProject {
   const now = new Date().toISOString();
   const store = readRaw();
   let project: ArtistProject;

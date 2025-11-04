@@ -33,7 +33,7 @@ export default function ROICalculator() {
 
         <label className="flex flex-col">
           <div className="text-sm opacity-70">Period</div>
-          <select value={period} onChange={(e) => setPeriod(e.target.value as any)} className="p-2 rounded border">
+          <select value={period} onChange={(e) => setPeriod(e.target.value as 'monthly' | 'yearly')} className="p-2 rounded border">
             <option value="monthly">Monthly</option>
             <option value="yearly">Yearly</option>
           </select>

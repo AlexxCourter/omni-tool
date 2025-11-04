@@ -6,7 +6,7 @@ export default function OmniWheel() {
   const [options, setOptions] = useState<string[]>(["Option 1", "Option 2", "Option 3"]);
   const [spinResult, setSpinResult] = useState<string | null>(null);
   const [spinning, setSpinning] = useState(false);
-  const wheelRef = useRef<HTMLDivElement | null>(null);
+  const wheelRef = useRef<SVGSVGElement | null>(null);
 
   function updateOption(index: number, value: string) {
     setOptions((s) => s.map((v, i) => (i === index ? value : v)));
@@ -80,7 +80,7 @@ export default function OmniWheel() {
         <div className="flex-1 flex flex-col items-center">
           <div className="w-full max-w-sm">
             <div className="relative mx-auto" style={{ width: size, height: size }}>
-              <svg ref={wheelRef as any} viewBox={`0 0 ${size} ${size}`} style={{ transformOrigin: '50% 50%', transition: 'transform 0s' }}>
+              <svg ref={wheelRef} viewBox={`0 0 ${size} ${size}`} style={{ transformOrigin: '50% 50%', transition: 'transform 0s' }}>
                 <g className="wheel-group">
                   {options.map((opt, i) => {
                     const start = i * sliceDeg;

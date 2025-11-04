@@ -105,16 +105,30 @@ export default function GridOverlay(){
     resizingRef.current = { active: true, startX: offsetX, startY: offsetY, startW: gridRect.w, startH: gridRect.h };
     window.addEventListener('mousemove', onPointerMove);
     window.addEventListener('mouseup', stopResize);
-    window.addEventListener('touchmove', onTouchMove, { passive: false } as any);
+    window.addEventListener('touchmove', onTouchMove, { passive: false } as AddEventListenerOptions);
     window.addEventListener('touchend', stopResize);
   }
 
-  function onPointerMove(e:MouseEvent){
+  // onPointerMove accepts either a real MouseEvent (from mousemove) or a synthetic object used for touch handling
+  function isPointLike(x: unknown): x is { clientX: number; clientY: number } {
+    return typeof x === "object" && x !== null && "clientX" in (x as object) && "clientY" in (x as object);
+  }
+
+  function onPointerMove(e: MouseEvent | { clientX: number; clientY: number }){
     if(!resizingRef.current.active) return;
     const img = imgRef.current; if(!img || !gridRect) return;
     const rectImg = img.getBoundingClientRect();
-    const offsetX = e.clientX - rectImg.left;
-    const offsetY = e.clientY - rectImg.top;
+    let clientX: number;
+    let clientY: number;
+    if (isPointLike(e)) {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    } else {
+      clientX = (e as MouseEvent).clientX;
+      clientY = (e as MouseEvent).clientY;
+    }
+    const offsetX = clientX - rectImg.left;
+    const offsetY = clientY - rectImg.top;
     const dx = offsetX - resizingRef.current.startX;
     const dy = offsetY - resizingRef.current.startY;
     const newW = Math.max(40, Math.round(resizingRef.current.startW + dx));
@@ -129,14 +143,14 @@ export default function GridOverlay(){
     if(!resizingRef.current.active) return;
     ev.preventDefault();
     const t = ev.touches[0];
-    onPointerMove({ clientX: t.clientX, clientY: t.clientY } as any);
+    onPointerMove({ clientX: t.clientX, clientY: t.clientY });
   }
 
   function stopResize(){
     resizingRef.current.active = false;
     window.removeEventListener('mousemove', onPointerMove);
     window.removeEventListener('mouseup', stopResize);
-    window.removeEventListener('touchmove', onTouchMove as any);
+    window.removeEventListener('touchmove', onTouchMove as EventListener);
     window.removeEventListener('touchend', stopResize);
   }
 
@@ -159,7 +173,7 @@ export default function GridOverlay(){
       <div className="flex gap-4">
         <div>
           <div className="mb-2">Grid</div>
-          <select value={grid} onChange={(e)=>setGrid(e.target.value as any)} className="px-2 py-1 border rounded">
+          <select value={grid} onChange={(e)=>setGrid(e.target.value as 'none'|'thirds'|'golden'|'perspective')} className="px-2 py-1 border rounded">
             <option value="thirds">Rule of Thirds</option>
             <option value="golden">Golden Ratio</option>
             <option value="perspective">Perspective</option>

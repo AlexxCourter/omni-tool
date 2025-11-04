@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import artStorage from "../utils/artStorage";
+import artStorage, { ArtistProject } from "../utils/artStorage";
 
 function hexToRgb(hex: string) {
   const cleaned = hex.replace('#','');
@@ -15,7 +15,8 @@ function hexToRgb(hex: string) {
 function rgbToHsl(r:number,g:number,b:number){
   r /= 255; g /= 255; b /= 255;
   const max = Math.max(r,g,b), min = Math.min(r,g,b);
-  let h=0,s=0,l=(max+min)/2;
+  let h = 0, s = 0;
+  const l = (max + min) / 2;
   if(max !== min){
     const d = max - min;
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
@@ -34,7 +35,7 @@ export default function ColorPicker() {
   const [paletteName, setPaletteName] = useState('My Palette');
   // Palette should have 6 selectable colors
   const [palette, setPalette] = useState<string[]>(['#7be8ff','#ff6b6b','#3aff99','#ffd166','#c084fc','#ffd1d1']);
-  const [saved, setSaved] = useState<any[]>([]);
+  const [saved, setSaved] = useState<ArtistProject[]>([]);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
 
   useEffect(()=>{
@@ -42,11 +43,12 @@ export default function ColorPicker() {
   },[]);
 
   // Dynamically load react-colorful's HexColorPicker if available at runtime.
-  const [Picker, setPicker] = useState<any>(null);
+  type HexPickerType = React.ComponentType<{ color?: string; onChange: (v: string) => void }>;
+  const [Picker, setPicker] = useState<HexPickerType | null>(null);
   useEffect(()=>{
     let mounted = true;
     import('react-colorful').then(mod => {
-      if(mounted) setPicker(() => mod?.HexColorPicker || mod?.default || null);
+      if(mounted) setPicker(() => (mod?.HexColorPicker || mod?.default) as HexPickerType);
     }).catch(() => {
       // not installed — we'll fall back to native color input
     });
@@ -97,7 +99,7 @@ export default function ColorPicker() {
           <div className="mb-2">
             <div className="inline-block">
               {Picker ? (
-                <Picker color={color} onChange={(v:any) => onColorChange(v)} />
+                <Picker color={color} onChange={(v: string) => onColorChange(v)} />
               ) : (
                 <input type="color" value={color} onChange={(e)=> onColorChange(e.target.value)} className="w-20 h-10 p-0 border-0" />
               )}
@@ -130,17 +132,27 @@ export default function ColorPicker() {
             <h3 className="font-semibold">Saved Palettes</h3>
             <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 gap-3">
               {saved.length === 0 && <div className="text-sm opacity-60">No palettes yet</div>}
-              {saved.map((s:any)=>(
-                <div key={s.id} className="flex flex-col items-center">
-                  <div className="palette-tile">
-                    {(s.data?.colors||[]).slice(0,6).map((c:string, idx:number)=> (
-                      <div key={idx} style={{ background: c }} />
-                    ))}
+              {saved.map((s: ArtistProject) => {
+                const extractColors = (d: unknown): string[] => {
+                  if (typeof d === 'object' && d !== null && 'colors' in d) {
+                    const maybe = (d as { colors?: unknown }).colors;
+                    if (Array.isArray(maybe)) return maybe.filter((c): c is string => typeof c === 'string');
+                  }
+                  return [];
+                };
+                const cols = extractColors(s.data).slice(0, 6);
+                return (
+                  <div key={s.id} className="flex flex-col items-center">
+                    <div className="palette-tile">
+                      {cols.map((c, idx) => (
+                        <div key={idx} style={{ background: c }} />
+                      ))}
+                    </div>
+                    <div className="mt-1 text-sm font-medium">{s.name}</div>
+                    <button className="btn mt-2" onClick={() => exportPalette(extractColors(s.data))}>Export</button>
                   </div>
-                  <div className="mt-1 text-sm font-medium">{s.name}</div>
-                  <button className="btn mt-2" onClick={()=>exportPalette(s.data?.colors||[])}>Export</button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
