@@ -71,6 +71,7 @@ export default function SketchPad(){
       
       if (paths) {
         // Load the actual drawing paths for true editing
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         await ref.current.loadPaths(paths as any);
       }
       

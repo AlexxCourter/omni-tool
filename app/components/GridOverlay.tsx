@@ -122,6 +122,7 @@ export default function GridOverlay(){
     resizingRef.current = { active: true, startX: offsetX, startY: offsetY, startW: gridRect.w, startH: gridRect.h };
     window.addEventListener('mousemove', onPointerMove);
     window.addEventListener('mouseup', stopResize);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     window.addEventListener('touchmove', onTouchMove, { passive: false } as any);
     window.addEventListener('touchend', stopResize);
   }
@@ -146,6 +147,7 @@ export default function GridOverlay(){
     if(!resizingRef.current.active) return;
     ev.preventDefault();
     const t = ev.touches[0];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onPointerMove({ clientX: t.clientX, clientY: t.clientY } as any);
   }
 
@@ -153,6 +155,7 @@ export default function GridOverlay(){
     resizingRef.current.active = false;
     window.removeEventListener('mousemove', onPointerMove);
     window.removeEventListener('mouseup', stopResize);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     window.removeEventListener('touchmove', onTouchMove as any);
     window.removeEventListener('touchend', stopResize);
   }
@@ -176,7 +179,7 @@ export default function GridOverlay(){
       <div className="flex gap-4">
         <div>
           <div className="mb-2">Grid</div>
-          <select value={grid} onChange={(e)=>setGrid(e.target.value as any)} className="px-2 py-1 border rounded">
+          <select value={grid} onChange={(e)=>setGrid(e.target.value as 'none'|'thirds'|'golden'|'perspective'|'square')} className="px-2 py-1 border rounded">
             <option value="thirds">Rule of Thirds</option>
             <option value="golden">Golden Ratio</option>
             <option value="perspective">Perspective</option>
