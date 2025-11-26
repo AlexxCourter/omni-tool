@@ -37,9 +37,7 @@ export default function ValueChecker(){
       data.data[i] = data.data[i+1] = data.data[i+2] = lum;
     }
     ctx.putImageData(data,0,0);
-    // make canvas display at same CSS size as image
-    canvas.style.width = img.clientWidth + 'px';
-    canvas.style.height = img.clientHeight + 'px';
+    // Don't set explicit width/height - let CSS handle it to maintain aspect ratio
   }
 
   function save(){
@@ -61,7 +59,8 @@ export default function ValueChecker(){
       </div>
 
       <div className="flex flex-col md:flex-row gap-4 items-start">
-        <div style={{ maxWidth: 540, width: '100%' }}>
+        <div className="w-full md:max-w-[540px]">
+          <div className="mb-2 font-semibold">Original</div>
           {fileUrl ? (
             <img src={fileUrl} alt="original" ref={imgRef} onLoad={generateGrayscale} style={{ maxWidth: '100%', height: 'auto', display: 'block' }} />
           ) : (
@@ -69,10 +68,10 @@ export default function ValueChecker(){
           )}
         </div>
 
-        <div style={{ maxWidth: 540, width: '100%' }}>
-          <div className="mb-2">Grayscale Preview</div>
-          <div style={{ border: '1px solid rgba(255,255,255,0.04)', display: 'inline-block' }}>
-            <canvas ref={canvasRef} />
+        <div className="w-full md:max-w-[540px]">
+          <div className="mb-2 font-semibold">Grayscale Preview</div>
+          <div style={{ border: '1px solid rgba(255,255,255,0.04)', display: 'inline-block', maxWidth: '100%' }}>
+            <canvas ref={canvasRef} style={{ maxWidth: '100%', height: 'auto', display: 'block' }} />
           </div>
           <div className="mt-3">
             <button className="btn" onClick={save}>Save</button>

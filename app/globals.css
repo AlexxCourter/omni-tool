@@ -573,6 +573,131 @@ body {
 .bg-black\/60 { background: rgba(0,0,0,0.6); }
 .bg-black\/10 { background: rgba(0,0,0,0.1); }
 
+/* Dice animation */
+@keyframes bounce-in {
+  0% { 
+    opacity: 0; 
+    transform: scale(0.5) translateY(-20px); 
+  }
+  50% { 
+    transform: scale(1.1) translateY(0); 
+  }
+  100% { 
+    opacity: 1; 
+    transform: scale(1) translateY(0); 
+  }
+}
+
+.animate-bounce-in {
+  animation: bounce-in 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+/* Dice result shapes - base style */
+.dice-result {
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* d6 - Square/Cube (default) */
+.dice-square {
+  border-radius: 8px;
+  width: 90px;
+  height: 90px;
+}
+
+/* d4 - Triangle (pyramid) */
+.dice-triangle {
+  width: 0;
+  height: 0;
+  border-left: 50px solid transparent;
+  border-right: 50px solid transparent;
+  border-bottom: 90px solid rgba(255,255,255,0.05);
+  border-radius: 4px;
+  background: transparent;
+  min-width: 0;
+  position: relative;
+  /* Add border around triangle */
+  filter: drop-shadow(0 0 2px rgba(255,255,255,0.3));
+}
+
+.dice-triangle::before {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-left: 48px solid transparent;
+  border-right: 48px solid transparent;
+  border-bottom: 87px solid var(--background);
+  left: -48px;
+  top: 2px;
+  border-radius: 4px;
+}
+
+/* Center the number in triangle */
+.dice-triangle-content {
+  position: absolute;
+  left: 50%;
+  top: 65%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  width: 100px;
+  text-align: center;
+}
+
+/* d8 - Diamond (octahedron) */
+.dice-diamond {
+  width: 85px;
+  height: 85px;
+  transform: rotate(45deg);
+  border-radius: 12px;
+}
+
+.dice-diamond > * {
+  transform: rotate(-45deg);
+}
+
+/* d10 - Kite shape */
+.dice-kite {
+  width: 80px;
+  height: 95px;
+  clip-path: polygon(50% 0%, 100% 35%, 85% 100%, 15% 100%, 0% 35%);
+  border-radius: 8px;
+}
+
+/* d12 - Pentagon */
+.dice-pentagon {
+  width: 90px;
+  height: 90px;
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+  border-radius: 6px;
+}
+
+/* d20 - Hexagon */
+.dice-hexagon {
+  width: 90px;
+  height: 90px;
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  border-radius: 4px;
+}
+
+/* d100 - Rectangle (elongated) */
+.dice-rectangle {
+  width: 110px;
+  height: 75px;
+  border-radius: 10px;
+}
+
+/* Coin - Circle */
+.dice-circle {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  font-size: 1.2rem !important;
+}
 
 
 

@@ -16,6 +16,14 @@ export default function Calculator() {
     setDisplay("0");
   }
 
+  function backspace() {
+    setDisplay((prev) => {
+      if (prev === "0" || prev === "Error") return "0";
+      const newDisplay = prev.slice(0, -1);
+      return newDisplay === "" ? "0" : newDisplay;
+    });
+  }
+
   function evaluate() {
     try {
       // Evaluate simple math expression. For safety and correctness we
@@ -82,6 +90,9 @@ export default function Calculator() {
         <div className="mt-3 flex gap-2">
           <button onClick={clearAll} className="btn">
             C
+          </button>
+          <button onClick={backspace} className="btn">
+            ⌫
           </button>
         </div>
       </div>

@@ -6,9 +6,10 @@ import artStorage from "../utils/artStorage";
 export default function GridOverlay(){
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
-  const [grid, setGrid] = useState<'none'|'thirds'|'golden'|'perspective'>('thirds');
+  const [grid, setGrid] = useState<'none'|'thirds'|'golden'|'perspective'|'square'>('thirds');
   const [gridColor, setGridColor] = useState<string>('#3aff99'); // default neon green
   const [gridLineWidth, setGridLineWidth] = useState<number>(2);
+  const [squareGridFactor, setSquareGridFactor] = useState<number>(1); // 1 = 1/10 of image size
   const imgRef = useRef<HTMLImageElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -20,7 +21,7 @@ export default function GridOverlay(){
   useEffect(()=>{
     draw();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  },[fileUrl, grid, gridColor, gridRect, gridLineWidth]);
+  },[fileUrl, grid, gridColor, gridRect, gridLineWidth, squareGridFactor]);
 
   function onFile(e: React.ChangeEvent<HTMLInputElement>){
     const f = e.target.files?.[0];
@@ -92,6 +93,22 @@ export default function GridOverlay(){
       ctx.moveTo(rx + rw, ry); ctx.lineTo(cx, cy);
       // center vertical
       ctx.moveTo(cx, ry); ctx.lineTo(cx, ry + rh);
+    } else if(grid === 'square'){
+      // Square grid: base square size is 1/10 of the smaller dimension, multiplied by factor
+      const baseDimension = Math.min(rw, rh);
+      const squareSize = (baseDimension / 10) * squareGridFactor;
+      
+      // Draw vertical lines
+      for (let x = rx + squareSize; x < rx + rw; x += squareSize) {
+        ctx.moveTo(x, ry);
+        ctx.lineTo(x, ry + rh);
+      }
+      
+      // Draw horizontal lines
+      for (let y = ry + squareSize; y < ry + rh; y += squareSize) {
+        ctx.moveTo(rx, y);
+        ctx.lineTo(rx + rw, y);
+      }
     }
     ctx.stroke();
   }
@@ -105,30 +122,16 @@ export default function GridOverlay(){
     resizingRef.current = { active: true, startX: offsetX, startY: offsetY, startW: gridRect.w, startH: gridRect.h };
     window.addEventListener('mousemove', onPointerMove);
     window.addEventListener('mouseup', stopResize);
-    window.addEventListener('touchmove', onTouchMove, { passive: false } as AddEventListenerOptions);
+    window.addEventListener('touchmove', onTouchMove, { passive: false } as any);
     window.addEventListener('touchend', stopResize);
   }
 
-  // onPointerMove accepts either a real MouseEvent (from mousemove) or a synthetic object used for touch handling
-  function isPointLike(x: unknown): x is { clientX: number; clientY: number } {
-    return typeof x === "object" && x !== null && "clientX" in (x as object) && "clientY" in (x as object);
-  }
-
-  function onPointerMove(e: MouseEvent | { clientX: number; clientY: number }){
+  function onPointerMove(e:MouseEvent){
     if(!resizingRef.current.active) return;
     const img = imgRef.current; if(!img || !gridRect) return;
     const rectImg = img.getBoundingClientRect();
-    let clientX: number;
-    let clientY: number;
-    if (isPointLike(e)) {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    } else {
-      clientX = (e as MouseEvent).clientX;
-      clientY = (e as MouseEvent).clientY;
-    }
-    const offsetX = clientX - rectImg.left;
-    const offsetY = clientY - rectImg.top;
+    const offsetX = e.clientX - rectImg.left;
+    const offsetY = e.clientY - rectImg.top;
     const dx = offsetX - resizingRef.current.startX;
     const dy = offsetY - resizingRef.current.startY;
     const newW = Math.max(40, Math.round(resizingRef.current.startW + dx));
@@ -143,20 +146,20 @@ export default function GridOverlay(){
     if(!resizingRef.current.active) return;
     ev.preventDefault();
     const t = ev.touches[0];
-    onPointerMove({ clientX: t.clientX, clientY: t.clientY });
+    onPointerMove({ clientX: t.clientX, clientY: t.clientY } as any);
   }
 
   function stopResize(){
     resizingRef.current.active = false;
     window.removeEventListener('mousemove', onPointerMove);
     window.removeEventListener('mouseup', stopResize);
-    window.removeEventListener('touchmove', onTouchMove as EventListener);
+    window.removeEventListener('touchmove', onTouchMove as any);
     window.removeEventListener('touchend', stopResize);
   }
 
   async function saveProject(){
     if(!fileUrl) return alert('No image loaded');
-    artStorage.saveProject('gridoverlay', 'Grid ' + new Date().toLocaleString(), { image: fileUrl, gridType: grid, gridColor, gridRect, gridLineWidth });
+    artStorage.saveProject('gridoverlay', 'Grid ' + new Date().toLocaleString(), { image: fileUrl, gridType: grid, gridColor, gridRect, gridLineWidth, squareGridFactor });
     alert('Saved grid project');
   }
 
@@ -173,12 +176,31 @@ export default function GridOverlay(){
       <div className="flex gap-4">
         <div>
           <div className="mb-2">Grid</div>
-          <select value={grid} onChange={(e)=>setGrid(e.target.value as 'none'|'thirds'|'golden'|'perspective')} className="px-2 py-1 border rounded">
+          <select value={grid} onChange={(e)=>setGrid(e.target.value as any)} className="px-2 py-1 border rounded">
             <option value="thirds">Rule of Thirds</option>
             <option value="golden">Golden Ratio</option>
             <option value="perspective">Perspective</option>
+            <option value="square">Square Grid</option>
             <option value="none">None</option>
           </select>
+          
+          {grid === 'square' && (
+            <div className="mt-3">
+              <label className="block mb-1">Square size factor: <span className="font-medium">{squareGridFactor}x</span></label>
+              <input 
+                type="range" 
+                min={1} 
+                max={10} 
+                step={0.5}
+                value={squareGridFactor} 
+                onChange={(e)=>setSquareGridFactor(parseFloat(e.target.value || '1'))} 
+              />
+              <div className="text-xs opacity-60 mt-1">
+                Base: 1/10 of image × {squareGridFactor}
+              </div>
+            </div>
+          )}
+          
           <div className="mt-3">
             <div className="mb-1">Grid color</div>
             <div className="flex gap-2 flex-wrap">

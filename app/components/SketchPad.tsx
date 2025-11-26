@@ -17,6 +17,8 @@ export default function SketchPad(){
   const [savedPalettes, setSavedPalettes] = React.useState<ArtistProject[]>([]);
   const [selectedPaletteId, setSelectedPaletteId] = React.useState<string | null>(null);
   const [selectedColorIndex, setSelectedColorIndex] = React.useState<number>(0);
+  const [modalImageUrl, setModalImageUrl] = React.useState<string | null>(null);
+  const [editingSketchId, setEditingSketchId] = React.useState<string | null>(null);
 
   React.useEffect(()=>{
     setSavedSketches(artStorage.listProjectsForApp('sketch'));
@@ -27,7 +29,14 @@ export default function SketchPad(){
     try{
       if (!ref.current) return alert('Canvas not ready');
       const data = await ref.current.exportImage('png');
-      artStorage.saveProject('sketch', 'Sketch ' + new Date().toLocaleString(), { dataUrl: data });
+      const paths = await ref.current.exportPaths();
+      if (editingSketchId) {
+        // Update existing sketch instead of creating new one
+        artStorage.saveProject('sketch', 'Sketch ' + new Date().toLocaleString(), { dataUrl: data, paths }, editingSketchId);
+        setEditingSketchId(null);
+      } else {
+        artStorage.saveProject('sketch', 'Sketch ' + new Date().toLocaleString(), { dataUrl: data, paths });
+      }
       setSavedSketches(artStorage.listProjectsForApp('sketch'));
     }catch(e){
       console.error(e);
@@ -38,6 +47,40 @@ export default function SketchPad(){
   function clear(){
     if (!ref.current) return;
     ref.current.clearCanvas();
+    setEditingSketchId(null);
+  }
+
+  function viewSketch(dataUrl: string) {
+    setModalImageUrl(dataUrl);
+  }
+
+  function closeModal() {
+    setModalImageUrl(null);
+  }
+
+  async function editSketch(sketchId: string, sketchData: unknown) {
+    if (!ref.current) return;
+    try {
+      // Extract paths from sketch data
+      let paths = null;
+      if (typeof sketchData === 'object' && sketchData !== null && 'paths' in sketchData) {
+        paths = (sketchData as { paths?: unknown }).paths;
+      }
+      
+      ref.current.clearCanvas();
+      
+      if (paths) {
+        // Load the actual drawing paths for true editing
+        await ref.current.loadPaths(paths as any);
+      }
+      
+      setEditingSketchId(sketchId);
+      // Scroll to canvas
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (e) {
+      console.error('Failed to load sketch for editing:', e);
+      alert('Could not load sketch for editing');
+    }
   }
 
   function extractDataUrl(d: unknown): string | undefined {
@@ -92,8 +135,24 @@ export default function SketchPad(){
               {savedSketches.map(s => {
                 const dataUrl = extractDataUrl(s.data);
                 return (
-                  <div key={s.id} className="border rounded overflow-hidden">
+                  <div key={s.id} className="border rounded overflow-hidden relative group cursor-pointer">
                     {dataUrl ? <img src={dataUrl} alt={s.name} style={{ width: '100%', height: 'auto', display: 'block' }} /> : <div className="p-2 text-sm opacity-60">(invalid image)</div>}
+                    
+                    {/* Hover overlay with buttons */}
+                    <div className="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      <button 
+                        onClick={() => dataUrl && viewSketch(dataUrl)} 
+                        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                      >
+                        View
+                      </button>
+                      <button 
+                        onClick={() => editSketch(s.id, s.data)} 
+                        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+                      >
+                        Edit
+                      </button>
+                    </div>
                   </div>
                 );
               })}
@@ -124,6 +183,29 @@ export default function SketchPad(){
           </div>
         </div>
       </div>
+
+      {/* View Modal */}
+      {modalImageUrl && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4"
+          onClick={closeModal}
+        >
+          <div className="relative max-w-full max-h-full" onClick={(e) => e.stopPropagation()}>
+            <button 
+              onClick={closeModal}
+              className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full hover:bg-red-600 flex items-center justify-center font-bold z-10"
+              aria-label="Close modal"
+            >
+              ×
+            </button>
+            <img 
+              src={modalImageUrl} 
+              alt="Sketch preview" 
+              className="max-w-full max-h-[90vh] object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
