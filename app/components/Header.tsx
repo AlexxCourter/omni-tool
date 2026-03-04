@@ -25,28 +25,45 @@ export default function Header({
           className="px-3 py-1 border rounded mini-app-select"
         >
           <option value="dashboard">Dashboard</option>
-          <option value="calculator">Calculator</option>
-          <option value="notebook">Notebook</option>
-          <option value="counter">Counter</option>
-          <option value="dice">Dice</option>
-          <option value="worldclock">World Clock</option>
-          <option value="quickmarks">Quickmarks</option>
-          <option value="soundboard">Soundboard</option>
-          <option value="memoji">Memoji</option>
-          <option value="budget">Budget</option>
-          <option value="checkers">Checkers</option>
-          <option value="chess">Chess</option>
-          <option value="wisdomcube">Wisdom Cube</option>
-          <option value="omnipet">Omni-pet</option>
-          <option value="omniwheel">Omni Wheel</option>
-          <option value="colorpicker">Color Picker</option>
-          <option value="contrast">Contrast Checker</option>
-          <option value="sketch">Sketch Pad</option>
-          <option value="gridoverlay">Grid Overlay</option>
-          <option value="value">Value Checker</option>
-          <option value="savings">Savings Growth</option>
-          <option value="loan">Loan Calculator</option>
-          <option value="roi">ROI Calculator</option>
+          
+          <optgroup label="Omni-tools">
+            <option value="calculator">Calculator</option>
+            <option value="counter">Counter</option>
+            <option value="notebook">Notebook</option>
+            <option value="quickmarks">Quickmarks</option>
+            <option value="budget">Budget</option>
+            <option value="worldclock">World Clock</option>
+          </optgroup>
+
+          <optgroup label="Omni-Games">
+            <option value="checkers">Checkers</option>
+            <option value="chess">Chess</option>
+            <option value="dice">Dice</option>
+            <option value="memoji">Memoji</option>
+            <option value="soundboard">Soundboard</option>
+            <option value="wisdomcube">Wisdom Cube</option>
+            <option value="omnipet">Omni-pet</option>
+            <option value="omniwheel">Omni Wheel</option>
+          </optgroup>
+
+          <optgroup label="Artist Pack">
+            <option value="colorpicker">Color Picker</option>
+            <option value="contrast">Contrast Checker</option>
+            <option value="sketch">Sketch Pad</option>
+            <option value="gridoverlay">Grid Overlay</option>
+            <option value="value">Value Checker</option>
+          </optgroup>
+
+          <optgroup label="Financial Planning">
+            <option value="savings">Savings Growth</option>
+            <option value="loan">Loan Calculator</option>
+            <option value="roi">ROI Calculator</option>
+          </optgroup>
+
+          <optgroup label="Fitness Pack">
+            <option value="exerciseplan">Exercise Plan</option>
+            <option value="dietplan">Diet Plan</option>
+          </optgroup>
         </select>
       </div>
 

@@ -239,12 +239,30 @@ body {
   color: var(--foreground);
 }
 
+.mini-app-select optgroup {
+  background-color: var(--dropdown-bg-fallback);
+  background-color: var(--dropdown-bg);
+  color: var(--muted);
+  font-weight: 600;
+  font-style: normal;
+  margin-top: 8px;
+  padding-top: 4px;
+}
+
 /* On light mode prefer a subtle darker tint of the light background */
 @media (prefers-color-scheme: light) {
   .mini-app-select,
   .mini-app-select option {
     background-color: color-mix(in srgb, var(--background) 92%, black 8%);
     color: var(--foreground);
+  }
+  
+  .mini-app-select optgroup {
+    background-color: color-mix(in srgb, var(--background) 88%, black 12%);
+    color: var(--muted);
+    font-weight: 600;
+    margin-top: 8px;
+    padding-top: 4px;
   }
 }
 

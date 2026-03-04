@@ -37,4 +37,6 @@ export type View =
   | "value"
   | "savings"
   | "loan"
-  | "roi";
+  | "roi"
+  | "exerciseplan"
+  | "dietplan";

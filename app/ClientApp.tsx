@@ -26,6 +26,8 @@ import ContrastChecker from "./components/ContrastChecker";
 import SketchPad from "./components/SketchPad";
 import GridOverlay from "./components/GridOverlay";
 import ValueChecker from "./components/ValueChecker";
+import ExercisePlan from "./components/ExercisePlan";
+import DietPlan from "./components/DietPlan";
 import type { View } from "./types";
 
 export default function ClientApp({ children }: { children: React.ReactNode }) {
@@ -59,6 +61,8 @@ export default function ClientApp({ children }: { children: React.ReactNode }) {
           {view === "gridoverlay" && <GridOverlay />}
           {view === "value" && <ValueChecker />}
           {view === "worldclock" && <WorldClock />}
+          {view === "exerciseplan" && <ExercisePlan />}
+          {view === "dietplan" && <DietPlan />}
           {/* fallback: show children when no view matched */}
           {!["calculator", "notebook"].includes(view) && children}
         </div>
