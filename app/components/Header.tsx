@@ -33,6 +33,7 @@ export default function Header({
             <option value="quickmarks">Quickmarks</option>
             <option value="budget">Budget</option>
             <option value="worldclock">World Clock</option>
+            <option value="imageconvert">Image Converter</option>
           </optgroup>
 
           <optgroup label="Omni-Games">

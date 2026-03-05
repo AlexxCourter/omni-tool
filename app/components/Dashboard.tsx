@@ -46,6 +46,11 @@ export default function Dashboard({ setView }: { setView: React.Dispatch<React.S
             <img src="/clock.png" alt="World Clock" className="w-20 h-20 object-contain" />
             <div className="font-semibold">World Clock</div>
           </button>
+
+          <button onClick={() => setView("imageconvert")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Image Converter">
+            <img src="/imageconvert.png" alt="Image Converter" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Image Converter</div>
+          </button>
         </div>
       </div>
 

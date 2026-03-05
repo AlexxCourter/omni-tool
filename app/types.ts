@@ -39,4 +39,5 @@ export type View =
   | "loan"
   | "roi"
   | "exerciseplan"
-  | "dietplan";
+  | "dietplan"
+  | "imageconvert";

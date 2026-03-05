@@ -129,6 +129,207 @@ body {
 
 
 /* Responsive / Mobile friendly tweaks */
+/* Notebook: Canvas-like layout spanning viewport (applies to all screen sizes) */
+.notebook-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.notebook-header {
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: var(--background);
+}
+
+.notebook-body {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.mobile-hamburger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: 1px solid rgba(255,255,255,0.04);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* make the aside become an off-canvas panel */
+.notebook-aside {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 260px;
+  transform: translateX(-110%);
+  transition: transform 220ms ease;
+  z-index: 60;
+  padding: 12px;
+  background: var(--background);
+  overflow: auto;
+  box-shadow: 0 12px 32px rgba(2,6,23,0.6);
+  /* Hide scrollbar while keeping scroll functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.notebook-aside::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.notebook-list {
+  /* Hide scrollbar while keeping scroll functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.notebook-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Main content should use full width and fill height */
+.notebook-root .main-content {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.notebook-canvas {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.notebook-title-area {
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.notebook-editor-area {
+  flex: 1;
+  overflow: auto;
+  /* Hide scrollbar while keeping scroll functionality */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.notebook-editor-area::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.notebook-editor-area textarea {
+  min-height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* overlay that appears when drawer is open */
+.drawer-overlay {
+  display: none;
+}
+.notebook-root.drawer-open .notebook-aside {
+  transform: translateX(0);
+}
+.notebook-root.drawer-open .drawer-overlay {
+  display: block;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  z-index: 50;
+}
+
+/* Notebook modal styles */
+.notebook-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.notebook-modal {
+  background: var(--background);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 28px;
+  max-width: 460px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+  animation: modalSlideIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Notebook save button with animated gradient */
+.notebook-save-btn {
+  position: relative;
+  padding: 10px 18px;
+  border-radius: 8px;
+  color: white;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(to top, #355bc4, #3783d6, #47c5e8, #69d0da, #a8e5c5, #c2f1ae, #c2f1ae);
+  background-size: 100% 350%;
+  background-position: 0% 100%;
+  transition: background-position 2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.notebook-save-btn:hover {
+  background-position: 0% 0%;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(53, 91, 196, 0.4);
+}
+
+@keyframes lavaLampGradient {
+  0% {
+    background-position: 0% 100%;
+  }
+  25% {
+    background-position: 50% 80%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 20%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
 @media (max-width: 640px) {
   /* Stack calculator and history top-to-bottom */
   .calc-shell {
@@ -139,57 +340,6 @@ body {
   /* Make calculator card full width and keep history below it */
   .calc-card {
     width: 100%;
-  }
-
-  /* Notebook: hide the aside from normal flow and enable drawer behavior */
-  .mobile-hamburger {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 10px;
-    border-radius: 6px;
-    background: var(--btn-bg);
-    color: var(--btn-text);
-    border: 1px solid rgba(255,255,255,0.04);
-    font-size: 18px;
-  }
-
-  /* make the aside become an off-canvas panel */
-  .notebook-aside {
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 260px;
-    transform: translateX(-110%);
-    transition: transform 220ms ease;
-    z-index: 60;
-    padding: 12px;
-    /* Use a solid non-transparent background on mobile to avoid graphical issues */
-    background: var(--background);
-    overflow: auto;
-    box-shadow: 0 12px 32px rgba(2,6,23,0.6);
-  }
-
-  /* Main content should use full width when aside is off-canvas */
-  .notebook-root .flex > section,
-  .notebook-root .flex > .main-content {
-    width: 100%;
-  }
-
-  /* overlay that appears when drawer is open */
-  .drawer-overlay {
-    display: none;
-  }
-  .notebook-root.drawer-open .notebook-aside {
-    transform: translateX(0);
-  }
-  .notebook-root.drawer-open .drawer-overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.35);
-    z-index: 50;
   }
 
   /* improve world clock readability on mobile: single column and slightly smaller font */
@@ -203,17 +353,6 @@ body {
   /* Hide redundant timezone label on small clock cards to reduce visual clutter */
   .world-clock-card .tz-label {
     display: none;
-  }
-
-  /* Notebook header: ensure Save button is visible on small viewports */
-  .note-header {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .note-header .save-btn {
-    align-self: stretch; /* make the save button full-width on small screens */
   }
 }
 
