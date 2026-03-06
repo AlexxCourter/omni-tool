@@ -40,4 +40,5 @@ export type View =
   | "roi"
   | "exerciseplan"
   | "dietplan"
-  | "imageconvert";
+  | "imageconvert"
+  | "buttongen";

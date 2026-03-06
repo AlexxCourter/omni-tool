@@ -167,6 +167,17 @@ export default function Dashboard({ setView }: { setView: React.Dispatch<React.S
           </button>
         </div>
       </div>
+
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold">Web Development</h2>
+        <p className="text-sm opacity-60">Code generators and web dev utilities</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-3">
+          <button onClick={() => setView("buttongen")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Button Generator">
+            <img src="/buttongen.png" alt="Button Generator" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Button Generator</div>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

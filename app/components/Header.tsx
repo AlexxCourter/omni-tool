@@ -65,6 +65,10 @@ export default function Header({
             <option value="exerciseplan">Exercise Plan</option>
             <option value="dietplan">Diet Plan</option>
           </optgroup>
+
+          <optgroup label="Web Development">
+            <option value="buttongen">Button Generator</option>
+          </optgroup>
         </select>
       </div>
 
