@@ -30,6 +30,7 @@ import ExercisePlan from "./components/ExercisePlan";
 import DietPlan from "./components/DietPlan";
 import ImageConverter from "./components/ImageConverter";
 import ButtonGenerator from "./components/ButtonGenerator";
+import GridFlexSandbox from "./components/GridFlexSandbox";
 import type { View } from "./types";
 
 export default function ClientApp({ children }: { children: React.ReactNode }) {
@@ -67,8 +68,7 @@ export default function ClientApp({ children }: { children: React.ReactNode }) {
           {view === "dietplan" && <DietPlan />}
           {view === "imageconvert" && <ImageConverter />}
           {view === "buttongen" && <ButtonGenerator />}
-          {/* fallback: show children when no view matched */}
-          {!["calculator", "notebook"].includes(view) && children}
+          {view === "gridflexsandbox" && <GridFlexSandbox />}
         </div>
       </main>
       <BottomQuickMenu setView={setView} />

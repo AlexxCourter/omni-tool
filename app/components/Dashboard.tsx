@@ -176,6 +176,11 @@ export default function Dashboard({ setView }: { setView: React.Dispatch<React.S
             <img src="/buttongen.png" alt="Button Generator" className="w-20 h-20 object-contain" />
             <div className="font-semibold">Button Generator</div>
           </button>
+
+          <button onClick={() => setView("gridflexsandbox")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Grid/Flex Sandbox">
+            <img src="/gridoverlay.png" alt="Grid/Flex Sandbox" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Grid/Flex Sandbox</div>
+          </button>
         </div>
       </div>
     </div>

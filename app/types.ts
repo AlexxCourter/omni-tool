@@ -41,4 +41,5 @@ export type View =
   | "exerciseplan"
   | "dietplan"
   | "imageconvert"
-  | "buttongen";
+  | "buttongen"
+  | "gridflexsandbox";

@@ -75,8 +75,12 @@ const SHAPE_PRESETS = [
 export default function ButtonGenerator() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [exportModalOpen, setExportModalOpen] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
+  const [importCssText, setImportCssText] = useState("");
   const [copiedHtml, setCopiedHtml] = useState(false);
   const [copiedCss, setCopiedCss] = useState(false);
+  const [draggedStopIndex, setDraggedStopIndex] = useState<number | null>(null);
+  const [reorderMode, setReorderMode] = useState(false);
   const [sectionsOpen, setSectionsOpen] = useState({
     text: true,
     colors: true,
@@ -138,6 +142,33 @@ export default function ButtonGenerator() {
     const newStops = [...buttonStyle.gradientStops];
     newStops[index] = { ...newStops[index], ...updates };
     updateStyle({ gradientStops: newStops.sort((a, b) => a.position - b.position) });
+  };
+
+  const reorderGradientStops = (fromIndex: number, toIndex: number) => {
+    const newStops = [...buttonStyle.gradientStops];
+    const [removed] = newStops.splice(fromIndex, 1);
+    newStops.splice(toIndex, 0, removed);
+    updateStyle({ gradientStops: newStops });
+  };
+
+  const handleDragStart = (index: number) => {
+    setDraggedStopIndex(index);
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+    if (draggedStopIndex !== null && draggedStopIndex !== dropIndex) {
+      reorderGradientStops(draggedStopIndex, dropIndex);
+    }
+    setDraggedStopIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedStopIndex(null);
   };
 
   const generateGradientString = () => {
@@ -240,6 +271,174 @@ export default function ButtonGenerator() {
     }
   };
 
+  const parseAndImportCSS = () => {
+    try {
+      const css = importCssText.toLowerCase();
+      const updates: Partial<ButtonStyle> = {};
+
+      // Parse background - check for background-image, background, and background-color
+      let bgValue = null;
+      
+      // Try background-image first (most specific)
+      const bgImageMatch = css.match(/background-image:\s*([^;]+);/);
+      if (bgImageMatch) {
+        bgValue = bgImageMatch[1].trim();
+      }
+      
+      // Try background property (can contain gradient or color)
+      if (!bgValue) {
+        const bgMatch = css.match(/background:\s*([^;]+);/);
+        if (bgMatch) {
+          bgValue = bgMatch[1].trim();
+        }
+      }
+      
+      // Try background-color as fallback
+      if (!bgValue) {
+        const bgColorMatch = css.match(/background-color:\s*([^;]+);/);
+        if (bgColorMatch) {
+          bgValue = bgColorMatch[1].trim();
+        }
+      }
+
+      if (bgValue) {
+        if (bgValue.includes('gradient')) {
+          updates.isCustomGradient = true;
+          updates.bgColor = bgValue;
+          
+          // Try to parse gradient angle and stops
+          const angleMatch = bgValue.match(/linear-gradient\((\d+)deg/);
+          if (angleMatch) {
+            updates.gradientAngle = Number(angleMatch[1]);
+          }
+          
+          // Parse color stops - support various color formats
+          const colorMatches = [...bgValue.matchAll(/(#[0-9a-f]{6}|#[0-9a-f]{3}|rgba?\([^)]+\))\s*(\d+(?:\.\d+)?)%/gi)];
+          if (colorMatches.length >= 2) {
+            updates.gradientStops = colorMatches.map(match => ({
+              color: match[1],
+              position: Math.round(Number(match[2]))
+            }));
+          }
+        } else {
+          updates.isCustomGradient = false;
+          updates.bgColor = bgValue;
+        }
+      }
+
+      // Parse color
+      const colorMatch = css.match(/(?:^|\s)color:\s*([^;]+);/);
+      if (colorMatch) {
+        updates.textColor = colorMatch[1].trim();
+      }
+
+      // Parse border
+      const borderMatch = css.match(/border:\s*(\d+)px/);
+      if (borderMatch) {
+        updates.borderWidth = Number(borderMatch[1]);
+        updates.buttonStyleType = "negative";
+      }
+
+      // Parse border-radius
+      const borderRadiusMatch = css.match(/border-radius:\s*(\d+)px/);
+      if (borderRadiusMatch) {
+        updates.borderRadius = Number(borderRadiusMatch[1]);
+      }
+
+      // Parse padding
+      const paddingMatch = css.match(/padding:\s*([^;]+);/);
+      if (paddingMatch) {
+        updates.padding = paddingMatch[1].trim();
+      }
+
+      // Parse font-size
+      const fontSizeMatch = css.match(/font-size:\s*([^;]+);/);
+      if (fontSizeMatch) {
+        updates.fontSize = fontSizeMatch[1].trim();
+      }
+
+      // Parse font-weight
+      const fontWeightMatch = css.match(/font-weight:\s*(\d+)/);
+      if (fontWeightMatch) {
+        updates.fontWeight = Number(fontWeightMatch[1]);
+      }
+
+      // Parse box-shadow
+      const shadowMatch = css.match(/box-shadow:\s*([^;]+);/);
+      if (shadowMatch) {
+        const shadowValue = shadowMatch[1].trim();
+        if (shadowValue === 'none') {
+          updates.shadowEnabled = false;
+        } else {
+          updates.shadowEnabled = true;
+          const shadowParts = shadowValue.match(/(-?\d+)px\s+(-?\d+)px\s+(\d+)px\s+(\d+)px\s+([^\s]+)/);
+          if (shadowParts) {
+            updates.shadowX = Number(shadowParts[1]);
+            updates.shadowY = Number(shadowParts[2]);
+            updates.shadowBlur = Number(shadowParts[3]);
+            updates.shadowSpread = Number(shadowParts[4]);
+            updates.shadowColor = shadowParts[5];
+          }
+        }
+      }
+
+      // Parse hover styles
+      // Check for hover background-image, background, and background-color
+      let hoverBgValue = null;
+      
+      const hoverBgImageMatch = css.match(/:hover[^}]*background-image:\s*([^;]+);/);
+      if (hoverBgImageMatch) {
+        hoverBgValue = hoverBgImageMatch[1].trim();
+      }
+      
+      if (!hoverBgValue) {
+        const hoverBgMatch = css.match(/:hover[^}]*background:\s*([^;]+);/);
+        if (hoverBgMatch) {
+          hoverBgValue = hoverBgMatch[1].trim();
+        }
+      }
+      
+      if (!hoverBgValue) {
+        const hoverBgColorMatch = css.match(/:hover[^}]*background-color:\s*([^;]+);/);
+        if (hoverBgColorMatch) {
+          hoverBgValue = hoverBgColorMatch[1].trim();
+        }
+      }
+      
+      if (hoverBgValue) {
+        updates.hoverBgColor = hoverBgValue;
+      }
+
+      const hoverColorMatch = css.match(/:hover[^}]*(?:^|\s)color:\s*([^;]+);/);
+      if (hoverColorMatch) {
+        updates.hoverTextColor = hoverColorMatch[1].trim();
+      }
+
+      // Parse transform for hover effect detection
+      if (css.includes(':hover') && css.includes('translatey(-')) {
+        updates.hoverEffect = 'lift';
+      } else if (css.includes(':hover') && css.includes('scale(')) {
+        updates.hoverEffect = 'grow';
+      } else if (css.includes(':hover') && css.includes('brightness(')) {
+        updates.hoverEffect = 'brightness';
+      } else if (css.includes('background-position')) {
+        if (css.includes('background-size: 100% 350%')) {
+          updates.hoverEffect = 'lavaLamp';
+        } else if (css.includes('background-size: 200% 100%')) {
+          updates.hoverEffect = 'slide';
+        }
+      } else if (css.includes(':hover') && /box-shadow:\s*0\s*0\s*\d+px/i.test(css)) {
+        updates.hoverEffect = 'glow';
+      }
+
+      updateStyle(updates);
+      setImportModalOpen(false);
+      setImportCssText("");
+    } catch (err) {
+      alert("Failed to parse CSS. Please check the format and try again.");
+    }
+  };
+
   const previewStyle: React.CSSProperties = useMemo(() => {
     const bgValue = buttonStyle.isCustomGradient ? generateGradientString() : buttonStyle.bgColor;
     const isGradient = bgValue.includes("gradient") || buttonStyle.isCustomGradient;
@@ -294,6 +493,12 @@ export default function ButtonGenerator() {
             className="px-4 py-2 border rounded flex items-center gap-2 hover:bg-white/5 transition-colors"
           >
             &#9776; Settings
+          </button>
+          <button
+            onClick={() => setImportModalOpen(true)}
+            className="px-4 py-2 border border-blue-500 text-blue-400 rounded hover:bg-blue-600/10 transition-colors"
+          >
+            Import CSS
           </button>
           <button
             onClick={() => setExportModalOpen(true)}
@@ -585,23 +790,72 @@ export default function ButtonGenerator() {
                               <div>
                                 <div className="flex items-center justify-between mb-2">
                                   <label className="text-sm font-medium">Color Stops</label>
-                                  <button
-                                    onClick={addGradientStop}
-                                    className="text-xs px-2 py-1 bg-blue-600 rounded hover:bg-blue-700 transition-colors"
-                                  >
-                                    + Add Stop
-                                  </button>
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => setReorderMode(!reorderMode)}
+                                      className={`text-xs px-2 py-1 rounded transition-colors ${
+                                        reorderMode 
+                                          ? 'bg-orange-600 hover:bg-orange-700' 
+                                          : 'bg-gray-600 hover:bg-gray-700'
+                                      }`}
+                                    >
+                                      {reorderMode ? '✓ Stop Reordering' : 'Reorder'}
+                                    </button>
+                                    <button
+                                      onClick={addGradientStop}
+                                      className={`text-xs px-2 py-1 rounded transition-colors ${
+                                        reorderMode 
+                                          ? 'bg-blue-600/50 cursor-not-allowed' 
+                                          : 'bg-blue-600 hover:bg-blue-700'
+                                      }`}
+                                      disabled={reorderMode}
+                                    >
+                                      + Add Stop
+                                    </button>
+                                  </div>
                                 </div>
                                 
                                 <div className="space-y-3">
                                   {buttonStyle.gradientStops.map((stop, index) => (
-                                    <div key={index} className="flex items-center gap-2">
+                                    <div 
+                                      key={index} 
+                                      className={`flex items-center gap-2 p-2 rounded transition-all ${
+                                        reorderMode ? 'cursor-grab active:cursor-grabbing' : ''
+                                      } ${
+                                        draggedStopIndex === index 
+                                          ? 'opacity-50 bg-white/10' 
+                                          : 'bg-white/5 hover:bg-white/10'
+                                      }`}
+                                      draggable={reorderMode}
+                                      onDragStart={reorderMode ? () => handleDragStart(index) : undefined}
+                                      onDragOver={reorderMode ? (e) => handleDragOver(e, index) : undefined}
+                                      onDrop={reorderMode ? (e) => handleDrop(e, index) : undefined}
+                                      onDragEnd={reorderMode ? handleDragEnd : undefined}
+                                    >
+                                      {reorderMode && (
+                                        <div 
+                                          className="flex-shrink-0 text-white/60 px-1"
+                                          title="Drag to reorder"
+                                        >
+                                          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                                            <circle cx="6" cy="4" r="1.5" />
+                                            <circle cx="10" cy="4" r="1.5" />
+                                            <circle cx="6" cy="8" r="1.5" />
+                                            <circle cx="10" cy="8" r="1.5" />
+                                            <circle cx="6" cy="12" r="1.5" />
+                                            <circle cx="10" cy="12" r="1.5" />
+                                          </svg>
+                                        </div>
+                                      )}
                                       <input
                                         type="color"
                                         value={stop.color}
                                         onChange={(e) => updateGradientStop(index, { color: e.target.value })}
-                                        className="w-16 h-10 rounded cursor-pointer flex-shrink-0"
+                                        className={`w-16 h-10 rounded flex-shrink-0 ${
+                                          reorderMode ? 'pointer-events-none opacity-50' : 'cursor-pointer'
+                                        }`}
                                         title={`Color ${index + 1}`}
+                                        disabled={reorderMode}
                                       />
                                       <div className="flex-1 relative">
                                         <input
@@ -610,17 +864,23 @@ export default function ButtonGenerator() {
                                           max="100"
                                           value={stop.position}
                                           onChange={(e) => updateGradientStop(index, { position: Number(e.target.value) })}
-                                          className="w-full gradient-slider"
+                                          className={`w-full gradient-slider ${
+                                            reorderMode ? 'pointer-events-none opacity-50' : ''
+                                          }`}
                                           style={{
                                             background: `linear-gradient(to right, ${buttonStyle.gradientStops.map(s => `${s.color} ${s.position}%`).join(', ')})`,
                                           }}
+                                          disabled={reorderMode}
                                         />
                                       </div>
                                       {buttonStyle.gradientStops.length > 2 && (
                                         <button
                                           onClick={() => removeGradientStop(index)}
-                                          className="w-6 h-6 flex items-center justify-center bg-red-600 rounded hover:bg-red-700 transition-colors text-sm flex-shrink-0"
+                                          className={`w-6 h-6 flex items-center justify-center bg-red-600 rounded transition-colors text-sm flex-shrink-0 ${
+                                            reorderMode ? 'opacity-50 cursor-not-allowed' : 'hover:bg-red-700'
+                                          }`}
                                           title="Remove stop"
+                                          disabled={reorderMode}
                                         >
                                           &times;
                                         </button>
@@ -847,6 +1107,69 @@ export default function ButtonGenerator() {
             </div>
           </div>
         </>
+      )}
+
+      {/* Import Modal */}
+      {importModalOpen && (
+        <div
+          className="fixed inset-0 bg-black/75 flex items-center justify-center z-50 p-6"
+          onClick={() => setImportModalOpen(false)}
+        >
+          <div
+            className="bg-[var(--background)] border border-white/15 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">Import CSS</h2>
+              <button
+                onClick={() => setImportModalOpen(false)}
+                className="px-3 py-1 border rounded hover:bg-white/5"
+              >
+                &times;
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold mb-2">
+                  Paste your CSS code below:
+                </label>
+                <textarea
+                  value={importCssText}
+                  onChange={(e) => setImportCssText(e.target.value)}
+                  placeholder=".custom-button {\n  background-color: #3b82f6;\n  color: #ffffff;\n  border-radius: 8px;\n  padding: 12px 24px;\n  font-size: 16px;\n  ...\n}"
+                  className="w-full h-64 bg-black/30 p-4 rounded border border-white/10 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded p-3 text-sm">
+                <p className="text-blue-300 mb-1">💡 Tip: Paste CSS for a button including hover states.</p>
+                <p className="text-gray-400 text-xs">
+                  The parser will extract properties like background, color, border, padding, font-size, box-shadow, and hover effects.
+                </p>
+              </div>
+
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => {
+                    setImportModalOpen(false);
+                    setImportCssText("");
+                  }}
+                  className="px-4 py-2 border rounded hover:bg-white/5 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={parseAndImportCSS}
+                  disabled={!importCssText.trim()}
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Import & Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Export Modal */}
