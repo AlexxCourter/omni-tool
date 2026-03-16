@@ -31,6 +31,7 @@ import DietPlan from "./components/DietPlan";
 import ImageConverter from "./components/ImageConverter";
 import ButtonGenerator from "./components/ButtonGenerator";
 import GridFlexSandbox from "./components/GridFlexSandbox";
+import MeasurementConverter from "./components/MeasurementConverter";
 import type { View } from "./types";
 
 export default function ClientApp({ children }: { children: React.ReactNode }) {
@@ -69,6 +70,7 @@ export default function ClientApp({ children }: { children: React.ReactNode }) {
           {view === "imageconvert" && <ImageConverter />}
           {view === "buttongen" && <ButtonGenerator />}
           {view === "gridflexsandbox" && <GridFlexSandbox />}
+          {view === "measurement" && <MeasurementConverter />}
         </div>
       </main>
       <BottomQuickMenu setView={setView} />

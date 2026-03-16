@@ -1059,7 +1059,7 @@ export default function ButtonGenerator() {
                       <select
                         value={buttonStyle.hoverEffect}
                         onChange={(e) => updateStyle({ hoverEffect: e.target.value })}
-                        className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded focus:outline-none focus:border-blue-500 cursor-pointer"
+                        className="w-full px-3 py-2 bg-gray-900 border border-white/10 rounded focus:outline-none focus:border-blue-500 cursor-pointer"
                       >
                         {HOVER_EFFECTS.map((effect) => (
                           <option key={effect.value} value={effect.value}>

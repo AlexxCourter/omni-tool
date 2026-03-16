@@ -18,9 +18,9 @@ export const metadata: Metadata = {
   title: "OMNI-TOOL",
   description: "A small collection of mini-tools",
   icons: {
-    icon: '/omnitool.png',
-    shortcut: '/omnitool.png',
-    apple: '/omnitool.png',
+    icon: '/omni-tool-logo-2.png',
+    shortcut: '/omni-tool-logo-2.png',
+    apple: '/omni-tool-logo-2.png',
   },
 };
 
@@ -32,10 +32,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Explicit icon links so the app uses public/omnitool.png */}
-        <link rel="icon" href="/omnitool.png" />
-        <link rel="shortcut icon" href="/omnitool.png" />
-        <link rel="apple-touch-icon" href="/omnitool.png" />
+        {/* Explicit icon links so the app uses public/omni-tool-logo-2.png */}
+        <link rel="icon" href="/omni-tool-logo-2.png" />
+        <link rel="shortcut icon" href="/omni-tool-logo-2.png" />
+        <link rel="apple-touch-icon" href="/omni-tool-logo-2.png" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ClientMount>{children}</ClientMount>

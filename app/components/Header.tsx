@@ -13,7 +13,7 @@ export default function Header({
   return (
     <header className="w-full border-b py-3 px-6 flex items-center gap-4">
       <div className="font-bold text-lg flex items-center gap-2">
-        <img src="/omnitool.png" alt="OMNI-TOOL logo" className="logo-img" onClick={() => setView("dashboard")} style={{ cursor: "pointer" }} />
+        <img src="/omni-tool-logo-2.png" alt="OMNI-TOOL logo" className="logo-img" onClick={() => setView("dashboard")} style={{ cursor: "pointer" }} />
         <span onClick={() => setView("dashboard")} style={{ cursor: "pointer" }}>OMNI-TOOL</span>
       </div>
 
@@ -34,6 +34,7 @@ export default function Header({
             <option value="budget">Budget</option>
             <option value="worldclock">World Clock</option>
             <option value="imageconvert">Image Converter</option>
+            <option value="measurement">Measurement Converter</option>
           </optgroup>
 
           <optgroup label="Omni-Games">
@@ -68,6 +69,7 @@ export default function Header({
 
           <optgroup label="Web Development">
             <option value="buttongen">Button Generator</option>
+            <option value="gridflexsandbox">Grid/Flex Sandbox</option>
           </optgroup>
         </select>
       </div>

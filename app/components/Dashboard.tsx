@@ -51,6 +51,11 @@ export default function Dashboard({ setView }: { setView: React.Dispatch<React.S
             <img src="/imageconvert.png" alt="Image Converter" className="w-20 h-20 object-contain" />
             <div className="font-semibold">Image Converter</div>
           </button>
+
+          <button onClick={() => setView("measurement")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Measurement Converter">
+            <img src="/measure-converter.png" alt="Measurement Converter" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Measurement Converter</div>
+          </button>
         </div>
       </div>
 

@@ -153,14 +153,14 @@ export default function GridFlexSandbox() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white p-8">
+    <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold mb-2">
             Grid & Flex Sandbox
           </h1>
-          <p className="text-gray-300">Visual learning environment for CSS Grid and Flexbox</p>
+          <p className="opacity-70 mt-2">Visual learning environment for CSS Grid and Flexbox</p>
         </div>
 
         {/* Mode Toggle */}
@@ -170,7 +170,7 @@ export default function GridFlexSandbox() {
             className={`px-8 py-3 rounded-lg font-semibold transition-all ${
               mode === "flex"
                 ? "bg-blue-600 shadow-lg shadow-blue-500/50 scale-105"
-                : "bg-white/10 hover:bg-white/20"
+                : "bg-white/5 hover:bg-white/10 border border-white/10"
             }`}
           >
             Flexbox
@@ -180,7 +180,7 @@ export default function GridFlexSandbox() {
             className={`px-8 py-3 rounded-lg font-semibold transition-all ${
               mode === "grid"
                 ? "bg-purple-600 shadow-lg shadow-purple-500/50 scale-105"
-                : "bg-white/10 hover:bg-white/20"
+                : "bg-white/5 hover:bg-white/10 border border-white/10"
             }`}
           >
             CSS Grid
@@ -189,7 +189,7 @@ export default function GridFlexSandbox() {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Controls Panel */}
-          <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10 h-fit">
+          <div className="bg-white/5 rounded-xl p-6 border border-white/10 h-fit">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold">Controls</h2>
               <button
@@ -225,7 +225,7 @@ export default function GridFlexSandbox() {
                     onChange={(e) =>
                       updateFlexSetting("flexDirection", e.target.value as FlexSettings["flexDirection"])
                     }
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-900 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="row">row</option>
                     <option value="row-reverse">row-reverse</option>
@@ -241,7 +241,7 @@ export default function GridFlexSandbox() {
                     onChange={(e) =>
                       updateFlexSetting("justifyContent", e.target.value as FlexSettings["justifyContent"])
                     }
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-900 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="flex-start">flex-start</option>
                     <option value="flex-end">flex-end</option>
@@ -259,7 +259,7 @@ export default function GridFlexSandbox() {
                     onChange={(e) =>
                       updateFlexSetting("alignItems", e.target.value as FlexSettings["alignItems"])
                     }
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-900 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="flex-start">flex-start</option>
                     <option value="flex-end">flex-end</option>
@@ -276,7 +276,7 @@ export default function GridFlexSandbox() {
                     onChange={(e) =>
                       updateFlexSetting("flexWrap", e.target.value as FlexSettings["flexWrap"])
                     }
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-900 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="nowrap">nowrap</option>
                     <option value="wrap">wrap</option>
@@ -307,7 +307,7 @@ export default function GridFlexSandbox() {
                     type="text"
                     value={gridSettings.gridTemplateColumns}
                     onChange={(e) => updateGridSetting("gridTemplateColumns", e.target.value)}
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
+                    className="w-full bg-gray-900 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                     placeholder="repeat(3, 1fr)"
                   />
                   <div className="mt-2 flex flex-wrap gap-2">
@@ -315,7 +315,7 @@ export default function GridFlexSandbox() {
                       <button
                         key={preset}
                         onClick={() => updateGridSetting("gridTemplateColumns", preset)}
-                        className="text-xs px-2 py-1 bg-purple-600/30 rounded hover:bg-purple-600/50 transition-colors"
+                        className="text-xs px-2 py-1 bg-blue-600/30 rounded hover:bg-blue-600/50 transition-colors"
                       >
                         {preset}
                       </button>
@@ -329,7 +329,7 @@ export default function GridFlexSandbox() {
                     type="text"
                     value={gridSettings.gridTemplateRows}
                     onChange={(e) => updateGridSetting("gridTemplateRows", e.target.value)}
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
+                    className="w-full bg-gray-900 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
                     placeholder="auto"
                   />
                   <div className="mt-2 flex flex-wrap gap-2">
@@ -337,7 +337,7 @@ export default function GridFlexSandbox() {
                       <button
                         key={preset}
                         onClick={() => updateGridSetting("gridTemplateRows", preset)}
-                        className="text-xs px-2 py-1 bg-purple-600/30 rounded hover:bg-purple-600/50 transition-colors"
+                        className="text-xs px-2 py-1 bg-blue-600/30 rounded hover:bg-blue-600/50 transition-colors"
                       >
                         {preset}
                       </button>
@@ -352,7 +352,7 @@ export default function GridFlexSandbox() {
                     onChange={(e) =>
                       updateGridSetting("justifyContent", e.target.value as GridSettings["justifyContent"])
                     }
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full bg-gray-900 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="start">start</option>
                     <option value="end">end</option>
@@ -371,7 +371,7 @@ export default function GridFlexSandbox() {
                     onChange={(e) =>
                       updateGridSetting("alignContent", e.target.value as GridSettings["alignContent"])
                     }
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full bg-gray-900 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="start">start</option>
                     <option value="end">end</option>
@@ -390,7 +390,7 @@ export default function GridFlexSandbox() {
                     onChange={(e) =>
                       updateGridSetting("justifyItems", e.target.value as GridSettings["justifyItems"])
                     }
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full bg-gray-900 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="start">start</option>
                     <option value="end">end</option>
@@ -406,7 +406,7 @@ export default function GridFlexSandbox() {
                     onChange={(e) =>
                       updateGridSetting("alignItems", e.target.value as GridSettings["alignItems"])
                     }
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full bg-gray-900 border border-white/20 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="start">start</option>
                     <option value="end">end</option>
@@ -475,10 +475,10 @@ export default function GridFlexSandbox() {
           </div>
 
           {/* Preview Panel */}
-          <div className="bg-white/5 backdrop-blur-lg rounded-xl p-6 border border-white/10">
+          <div className="bg-white/5 rounded-xl p-6 border border-white/10">
             <div className="mb-4">
               <h2 className="text-2xl font-bold mb-2">Preview</h2>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm opacity-60">
                 {mode === "flex" ? "Flexbox" : "CSS Grid"} container with {numItems} items
               </p>
             </div>
@@ -505,7 +505,7 @@ export default function GridFlexSandbox() {
             {/* Quick Tips */}
             <div className="mt-6 bg-white/5 rounded-lg p-4 border border-white/10">
               <h3 className="font-semibold mb-2 text-sm">💡 Quick Tips</h3>
-              <ul className="text-xs text-gray-300 space-y-1">
+              <ul className="text-xs opacity-70 space-y-1">
                 {mode === "flex" ? (
                   <>
                     <li>• <strong>flex-direction:</strong> Defines the main axis direction</li>
