@@ -10,6 +10,7 @@ import WorldClock from "./components/WorldClock";
 import Dashboard from "./components/Dashboard";
 import Quickmarks from "./components/Quickmarks";
 import BottomQuickMenu from "./components/BottomQuickMenu";
+import DraftWritePromo from "./components/DraftWritePromo";
 import Soundboard from "./components/Soundboard";
 import Memoji from "./components/Memoji";
 import SavingsGrowth from "./components/finance/SavingsGrowth";
@@ -30,6 +31,7 @@ import ExercisePlan from "./components/ExercisePlan";
 import DietPlan from "./components/DietPlan";
 import ImageConverter from "./components/ImageConverter";
 import ButtonGenerator from "./components/ButtonGenerator";
+import GradientDesigner from "./components/GradientDesigner";
 import GridFlexSandbox from "./components/GridFlexSandbox";
 import MeasurementConverter from "./components/MeasurementConverter";
 import type { View } from "./types";
@@ -69,11 +71,13 @@ export default function ClientApp({ children }: { children: React.ReactNode }) {
           {view === "dietplan" && <DietPlan />}
           {view === "imageconvert" && <ImageConverter />}
           {view === "buttongen" && <ButtonGenerator />}
+          {view === "gradientdesigner" && <GradientDesigner />}
           {view === "gridflexsandbox" && <GridFlexSandbox />}
           {view === "measurement" && <MeasurementConverter />}
         </div>
       </main>
       <BottomQuickMenu setView={setView} />
+      <DraftWritePromo />
     </div>
   );
 }

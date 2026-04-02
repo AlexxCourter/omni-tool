@@ -43,4 +43,5 @@ export type View =
   | "imageconvert"
   | "buttongen"
   | "gridflexsandbox"
-  | "measurement";
+  | "measurement"
+  | "gradientdesigner";

@@ -856,6 +856,93 @@ body {
   font-size: 1.2rem !important;
 }
 
+/* DraftWrite floating promo ad */
+.draftwrite-promo {
+  position: fixed;
+  left: 14px;
+  bottom: 14px;
+  width: min(320px, calc(100vw - 28px));
+  padding: 10px 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(123, 232, 255, 0.35);
+  background: linear-gradient(155deg, rgba(7, 16, 40, 0.97), rgba(8, 27, 56, 0.96));
+  color: var(--foreground);
+  box-shadow: 0 14px 30px rgba(2, 6, 23, 0.55), 0 0 0 1px rgba(123, 232, 255, 0.1) inset;
+  cursor: pointer;
+  z-index: 65;
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+
+.draftwrite-promo::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(circle at 20% 20%, rgba(105, 208, 218, 0.25), transparent 45%), radial-gradient(circle at 85% 75%, rgba(53, 91, 196, 0.3), transparent 50%);
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.draftwrite-promo:hover {
+  transform: translateY(-4px) scale(1.01);
+  border-color: rgba(194, 241, 174, 0.75);
+  box-shadow: 0 20px 45px rgba(2, 6, 23, 0.62), 0 0 28px rgba(105, 208, 218, 0.23);
+}
+
+.draftwrite-promo:hover::before {
+  opacity: 1;
+}
+
+.draftwrite-promo-hide {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-size: 11px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: var(--btn-text);
+  background: rgba(4, 14, 31, 0.9);
+  padding: 5px 7px;
+  border-radius: 999px;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.draftwrite-promo-hide:hover {
+  border-color: rgba(255, 255, 255, 0.42);
+  background: rgba(4, 14, 31, 1);
+}
+
+.draftwrite-promo-image {
+  display: block;
+  width: 100%;
+  max-height: 110px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 8px;
+}
+
+.draftwrite-promo-text {
+  margin: 0;
+  padding-right: 58px;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: rgba(217, 248, 255, 0.95);
+}
+
+@media (max-width: 640px) {
+  .draftwrite-promo {
+    left: 10px;
+    right: 10px;
+    bottom: 86px;
+    width: auto;
+  }
+}
+
 
 
 
