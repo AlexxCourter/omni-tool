@@ -1,29 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-
-const STORAGE_KEY = "omni_draftwrite_promo_hidden_v1";
+import React, { useState } from "react";
 const TARGET_URL = "https://draftwrite.app";
 
 export default function DraftWritePromo() {
   const [hidden, setHidden] = useState(false);
 
-  useEffect(() => {
-    try {
-      setHidden(localStorage.getItem(STORAGE_KEY) === "1");
-    } catch {
-      // Ignore storage errors and keep promo visible.
-    }
-  }, []);
-
   const hidePromo = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     setHidden(true);
-    try {
-      localStorage.setItem(STORAGE_KEY, "1");
-    } catch {
-      // Ignore storage errors.
-    }
   };
 
   const openPromo = () => {
@@ -64,8 +49,7 @@ export default function DraftWritePromo() {
       />
 
       <p className="draftwrite-promo-text">
-        Our friends over at draftwrite.app just launched! Check them out if you
-        want an easier writing tool.
+        Our friends over at draftwrite.app just launched! Check out their easy to use writing and writing analysis tool by clicking here.
       </p>
     </aside>
   );
