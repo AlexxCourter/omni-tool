@@ -611,10 +611,27 @@ body {
 /* Piece color adjustments */
 .piece-emoji { font-size: 20px; line-height: 1; }
 .piece-white { color: #ffffff; text-shadow: 0 1px 0 rgba(0,0,0,0.6); }
-.piece-black { color: #1f2937 !important; /* dark slate gray for black pieces */ text-shadow: 0 1px 0 rgba(255,255,255,0.02); filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
-/* On dark squares keep the same base color but add a subtle outer glow to increase perceived contrast */
-.piece-black.on-dark { color: #1f2937 !important; text-shadow: 0 1px 0 rgba(255,255,255,0.02); filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6)); }
-.piece-black.on-light { color: #1f2937 !important; }
+.piece-black {
+  color: #4b5563 !important;
+  text-shadow: 0 0 1px rgba(255,255,255,0.35), 0 1px 2px rgba(0,0,0,0.65);
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.55));
+}
+/* On dark squares, use a lighter graphite tone so black pieces remain clearly visible. */
+.piece-black.on-dark {
+  color: #6b7280 !important;
+  text-shadow: 0 0 2px rgba(255,255,255,0.45), 0 1px 2px rgba(0,0,0,0.65);
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6));
+}
+.piece-black.on-light { color: #4b5563 !important; }
+
+/* Chess-only highlight overrides to avoid affecting other board mini apps. */
+.chess-board .selected-square {
+  outline: 3px solid rgba(107, 219, 255, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18), 0 0 12px rgba(107, 219, 255, 0.32);
+}
+.chess-board .move-target {
+  box-shadow: inset 0 0 0 4px rgba(59, 255, 153, 0.45), 0 0 10px rgba(59, 255, 153, 0.2);
+}
 
 /* Ensure FontAwesome SVG icons inherit the CSS currentColor */
 .chess-board .svg-inline--fa, .chess-board svg { fill: currentColor; color: inherit; }
