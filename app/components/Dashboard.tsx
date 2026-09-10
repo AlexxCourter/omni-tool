@@ -182,6 +182,11 @@ export default function Dashboard({ setView }: { setView: React.Dispatch<React.S
             <div className="font-semibold">Button Generator</div>
           </button>
 
+          <button onClick={() => setView("calendarinvite")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Calendar Invite Builder">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-300 flex items-center justify-center text-lg font-bold tracking-[0.2em] text-white shadow-lg shadow-sky-500/20">CAL</div>
+            <div className="font-semibold">Calendar Invite</div>
+          </button>
+
           <button onClick={() => setView("gradientdesigner")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Gradient Designer">
             <img src="/gradientdesigner.png" alt="Gradient Designer" className="w-20 h-20 object-contain" />
             <div className="font-semibold">Gradient Designer</div>

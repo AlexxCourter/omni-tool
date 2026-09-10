@@ -31,6 +31,7 @@ import ExercisePlan from "./components/ExercisePlan";
 import DietPlan from "./components/DietPlan";
 import ImageConverter from "./components/ImageConverter";
 import ButtonGenerator from "./components/ButtonGenerator";
+import CalendarInviteBuilder from "./components/CalendarInviteBuilder";
 import GradientDesigner from "./components/GradientDesigner";
 import GridFlexSandbox from "./components/GridFlexSandbox";
 import MeasurementConverter from "./components/MeasurementConverter";
@@ -71,6 +72,7 @@ export default function ClientApp({ children }: { children: React.ReactNode }) {
           {view === "dietplan" && <DietPlan />}
           {view === "imageconvert" && <ImageConverter />}
           {view === "buttongen" && <ButtonGenerator />}
+          {view === "calendarinvite" && <CalendarInviteBuilder />}
           {view === "gradientdesigner" && <GradientDesigner />}
           {view === "gridflexsandbox" && <GridFlexSandbox />}
           {view === "measurement" && <MeasurementConverter />}

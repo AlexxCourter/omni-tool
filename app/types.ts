@@ -42,6 +42,7 @@ export type View =
   | "dietplan"
   | "imageconvert"
   | "buttongen"
+  | "calendarinvite"
   | "gridflexsandbox"
   | "measurement"
   | "gradientdesigner";

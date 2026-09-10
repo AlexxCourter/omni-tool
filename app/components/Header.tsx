@@ -69,6 +69,7 @@ export default function Header({
 
           <optgroup label="Web Development">
             <option value="buttongen">Button Generator</option>
+            <option value="calendarinvite">Calendar Invite Builder</option>
             <option value="gradientdesigner">Gradient Designer</option>
             <option value="gridflexsandbox">Grid/Flex Sandbox</option>
           </optgroup>
