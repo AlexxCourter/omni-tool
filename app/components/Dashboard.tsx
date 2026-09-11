@@ -183,7 +183,7 @@ export default function Dashboard({ setView }: { setView: React.Dispatch<React.S
           </button>
 
           <button onClick={() => setView("calendarinvite")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Calendar Invite Builder">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-300 flex items-center justify-center text-lg font-bold tracking-[0.2em] text-white shadow-lg shadow-sky-500/20">CAL</div>
+            <img src="/caleventbuilder.png" alt="Calendar Invite Builder" className="w-20 h-20 object-contain" />
             <div className="font-semibold">Calendar Invite</div>
           </button>
 

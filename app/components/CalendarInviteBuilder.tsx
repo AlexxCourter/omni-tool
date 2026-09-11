@@ -2,7 +2,6 @@
 
 import React, { useMemo, useState } from "react";
 
-type ExportMode = "both" | "google" | "outlook";
 type ButtonVariant = "solid" | "outline";
 
 interface CalendarInviteForm {
@@ -11,7 +10,8 @@ interface CalendarInviteForm {
   location: string;
   startDate: string;
   startTime: string;
-  durationMinutes: number;
+  endDate: string;
+  endTime: string;
   buttonLabel: string;
 }
 
@@ -116,6 +116,7 @@ function buildButtonHtml(options: {
 
 function getInitialForm(): CalendarInviteForm {
   const start = createDefaultStart();
+  const end = new Date(start.getTime() + 60 * 60000);
 
   return {
     title: "Team sync",
@@ -123,27 +124,21 @@ function getInitialForm(): CalendarInviteForm {
     location: "",
     startDate: toDateInputValue(start),
     startTime: toTimeInputValue(start),
-    durationMinutes: 60,
+    endDate: toDateInputValue(end),
+    endTime: toTimeInputValue(end),
     buttonLabel: "Add to calendar",
   };
 }
 
 export default function CalendarInviteBuilder() {
   const [form, setForm] = useState<CalendarInviteForm>(() => getInitialForm());
-  const [exportMode, setExportMode] = useState<ExportMode>("both");
   const [buttonVariant, setButtonVariant] = useState<ButtonVariant>("solid");
-  const [copiedType, setCopiedType] = useState<"google" | "outlook" | "html" | null>(null);
+  const [copiedType, setCopiedType] = useState<"google" | "outlook" | "google-html" | "outlook-html" | null>(null);
 
   const timezone = useMemo(() => Intl.DateTimeFormat().resolvedOptions().timeZone || "Local timezone", []);
 
   const startLocal = useMemo(() => combineLocalDateTime(form.startDate, form.startTime), [form.startDate, form.startTime]);
-  const endLocal = useMemo(() => {
-    if (!startLocal || !Number.isFinite(form.durationMinutes) || form.durationMinutes <= 0) {
-      return null;
-    }
-
-    return new Date(startLocal.getTime() + form.durationMinutes * 60000);
-  }, [form.durationMinutes, startLocal]);
+  const endLocal = useMemo(() => combineLocalDateTime(form.endDate, form.endTime), [form.endDate, form.endTime]);
 
   const calendarPayload = useMemo(() => buildSearchText(form.title, form.description, form.location), [form.description, form.location, form.title]);
 
@@ -158,43 +153,39 @@ export default function CalendarInviteBuilder() {
     };
   }, [calendarPayload.body, calendarPayload.location, calendarPayload.subject, endLocal, startLocal, timezone]);
 
-  const htmlSnippet = useMemo(() => {
-    if (!urls.googleUrl || !urls.outlookUrl) {
+  const canExport = Boolean(startLocal && endLocal && endLocal.getTime() > startLocal.getTime() && urls.googleUrl && urls.outlookUrl);
+
+  const googleHtml = useMemo(() => {
+    if (!urls.googleUrl) {
       return "";
     }
 
-    const googleButton = buildButtonHtml({
+    return buildButtonHtml({
       href: urls.googleUrl,
       label: form.buttonLabel || "Add to Google Calendar",
       color: GOOGLE_BUTTON_COLOR,
       variant: buttonVariant,
     });
+  }, [buttonVariant, form.buttonLabel, urls.googleUrl]);
 
-    const outlookButton = buildButtonHtml({
+  const outlookHtml = useMemo(() => {
+    if (!urls.outlookUrl) {
+      return "";
+    }
+
+    return buildButtonHtml({
       href: urls.outlookUrl,
       label: form.buttonLabel || "Add to Outlook Calendar",
       color: OUTLOOK_BUTTON_COLOR,
       variant: buttonVariant,
     });
-
-    if (exportMode === "google") {
-      return googleButton;
-    }
-
-    if (exportMode === "outlook") {
-      return outlookButton;
-    }
-
-    return `<div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">\n  ${googleButton}\n  ${outlookButton}\n</div>`;
-  }, [buttonVariant, exportMode, form.buttonLabel, urls.googleUrl, urls.outlookUrl]);
-
-  const canExport = Boolean(startLocal && endLocal && urls.googleUrl && urls.outlookUrl);
+  }, [buttonVariant, form.buttonLabel, urls.outlookUrl]);
 
   const updateForm = (updates: Partial<CalendarInviteForm>) => {
     setForm((current) => ({ ...current, ...updates }));
   };
 
-  const copyText = async (text: string, type: "google" | "outlook" | "html") => {
+  const copyText = async (text: string, type: "google" | "outlook" | "google-html" | "outlook-html") => {
     try {
       await navigator.clipboard.writeText(text);
       setCopiedType(type);
@@ -216,7 +207,7 @@ export default function CalendarInviteBuilder() {
         dateStyle: "medium",
         timeStyle: "short",
       })
-    : "Select a valid duration";
+    : "Select a valid end time";
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.22),_transparent_35%),radial-gradient(circle_at_top_right,_rgba(14,165,233,0.16),_transparent_28%),linear-gradient(180deg,_rgba(12,18,34,0.95),_rgba(8,11,22,0.98))] p-6 shadow-2xl">
@@ -254,11 +245,9 @@ export default function CalendarInviteBuilder() {
 
       <div className="relative grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <section className="space-y-4 rounded-2xl border border-white/10 bg-[rgba(10,15,28,0.78)] p-5 backdrop-blur-sm">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-white">Event details</h2>
-              <p className="text-sm text-white/60">Enter the event in your own timezone. The generated links are converted to UTC.</p>
-            </div>
+          <div>
+            <h2 className="text-lg font-semibold text-white">Event details</h2>
+            <p className="text-sm text-white/60">Enter the event in your own timezone. The generated links are converted to UTC.</p>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -312,22 +301,24 @@ export default function CalendarInviteBuilder() {
               />
             </label>
 
-            <label className="space-y-2 md:col-span-2">
-              <span className="text-sm font-medium text-white/75">Duration</span>
-              <div className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 px-4 py-3">
-                <input
-                  type="range"
-                  min="15"
-                  max="480"
-                  step="15"
-                  value={form.durationMinutes}
-                  onChange={(event) => updateForm({ durationMinutes: Number(event.target.value) })}
-                  className="flex-1 accent-cyan-400"
-                />
-                <div className="min-w-20 text-right text-sm font-semibold text-white">
-                  {form.durationMinutes} min
-                </div>
-              </div>
+            <label className="space-y-2">
+              <span className="text-sm font-medium text-white/75">End date</span>
+              <input
+                type="date"
+                value={form.endDate}
+                onChange={(event) => updateForm({ endDate: event.target.value })}
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300/50 focus:bg-white/10"
+              />
+            </label>
+
+            <label className="space-y-2">
+              <span className="text-sm font-medium text-white/75">End time</span>
+              <input
+                type="time"
+                value={form.endTime}
+                onChange={(event) => updateForm({ endTime: event.target.value })}
+                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300/50 focus:bg-white/10"
+              />
             </label>
 
             <label className="space-y-2 md:col-span-2">
@@ -341,153 +332,99 @@ export default function CalendarInviteBuilder() {
             </label>
           </div>
 
-          <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm text-emerald-50">
-            Google and Outlook links are generated from UTC timestamps, so they stay correct when shared across timezones.
+          <div className={`rounded-2xl border p-4 text-sm ${canExport ? "border-emerald-400/20 bg-emerald-400/10 text-emerald-50" : "border-amber-400/20 bg-amber-400/10 text-amber-50"}`}>
+            {canExport
+              ? "Google and Outlook links are generated from UTC timestamps, so they stay correct when shared across timezones."
+              : "End time must be after start time before links can be generated."}
           </div>
         </section>
 
         <section className="space-y-4 rounded-2xl border border-white/10 bg-[rgba(10,15,28,0.78)] p-5 backdrop-blur-sm">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <h2 className="text-lg font-semibold text-white">Output</h2>
-              <p className="text-sm text-white/60">Share the links directly or copy a ready-to-use HTML snippet.</p>
-            </div>
-            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/70">
-              {exportMode === "both" ? "Dual button" : `${exportMode} button`}
-            </div>
+          <div>
+            <h2 className="text-lg font-semibold text-white">Output</h2>
+            <p className="text-sm text-white/60">Copy the link or grab the HTML button for each provider separately.</p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="space-y-2 sm:col-span-2">
-              <span className="text-sm font-medium text-white/75">HTML output mode</span>
-              <select
-                value={exportMode}
-                onChange={(event) => setExportMode(event.target.value as ExportMode)}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition focus:border-cyan-300/50 focus:bg-white/10"
+          <label className="space-y-2">
+            <span className="text-sm font-medium text-white/75">Button style</span>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setButtonVariant("solid")}
+                className={`rounded-xl border px-4 py-3 text-left transition ${buttonVariant === "solid" ? "border-cyan-300/60 bg-cyan-400/15 text-white" : "border-white/10 bg-white/5 text-white/70 hover:bg-white/10"}`}
               >
-                <option value="both">Google and Outlook buttons</option>
-                <option value="google">Google button only</option>
-                <option value="outlook">Outlook button only</option>
-              </select>
-            </label>
-
-            <label className="space-y-2 sm:col-span-2">
-              <span className="text-sm font-medium text-white/75">Button style</span>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => setButtonVariant("solid")}
-                  className={`rounded-xl border px-4 py-3 text-left transition ${buttonVariant === "solid" ? "border-cyan-300/60 bg-cyan-400/15 text-white" : "border-white/10 bg-white/5 text-white/70 hover:bg-white/10"}`}
-                >
-                  <div className="font-semibold">Solid</div>
-                  <div className="text-xs opacity-70">Filled call to action</div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setButtonVariant("outline")}
-                  className={`rounded-xl border px-4 py-3 text-left transition ${buttonVariant === "outline" ? "border-cyan-300/60 bg-cyan-400/15 text-white" : "border-white/10 bg-white/5 text-white/70 hover:bg-white/10"}`}
-                >
-                  <div className="font-semibold">Outline</div>
-                  <div className="text-xs opacity-70">Minimal button styling</div>
-                </button>
-              </div>
-            </label>
-          </div>
-
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <div className="mb-3 text-sm font-medium text-white/75">Preview buttons</div>
-            <div className="flex flex-wrap gap-3">
-              <a
-                href={canExport ? urls.googleUrl : undefined}
-                target="_blank"
-                rel="noreferrer"
-                className={`rounded-full px-4 py-3 text-sm font-semibold transition ${buttonVariant === "solid" ? "text-white" : "border"}`}
-                style={{
-                  backgroundColor: buttonVariant === "solid" ? GOOGLE_BUTTON_COLOR : "transparent",
-                  borderColor: GOOGLE_BUTTON_COLOR,
-                  color: buttonVariant === "solid" ? "#ffffff" : GOOGLE_BUTTON_COLOR,
-                  pointerEvents: canExport ? "auto" : "none",
-                  opacity: canExport ? 1 : 0.5,
-                }}
+                <div className="font-semibold">Solid</div>
+                <div className="text-xs opacity-70">Filled call to action</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setButtonVariant("outline")}
+                className={`rounded-xl border px-4 py-3 text-left transition ${buttonVariant === "outline" ? "border-cyan-300/60 bg-cyan-400/15 text-white" : "border-white/10 bg-white/5 text-white/70 hover:bg-white/10"}`}
               >
-                Add to Google Calendar
-              </a>
-              <a
-                href={canExport ? urls.outlookUrl : undefined}
-                target="_blank"
-                rel="noreferrer"
-                className={`rounded-full px-4 py-3 text-sm font-semibold transition ${buttonVariant === "solid" ? "text-white" : "border"}`}
-                style={{
-                  backgroundColor: buttonVariant === "solid" ? OUTLOOK_BUTTON_COLOR : "transparent",
-                  borderColor: OUTLOOK_BUTTON_COLOR,
-                  color: buttonVariant === "solid" ? "#ffffff" : OUTLOOK_BUTTON_COLOR,
-                  pointerEvents: canExport ? "auto" : "none",
-                  opacity: canExport ? 1 : 0.5,
-                }}
-              >
-                Add to Outlook Calendar
-              </a>
+                <div className="font-semibold">Outline</div>
+                <div className="text-xs opacity-70">Minimal button styling</div>
+              </button>
             </div>
-          </div>
+          </label>
 
           <div className="space-y-3">
             <div className="rounded-2xl border border-white/10 bg-[#07101f] p-4">
               <div className="mb-2 flex items-center justify-between gap-3">
                 <div className="text-sm font-medium text-white/75">Google Calendar URL</div>
-                <button
-                  type="button"
-                  onClick={() => copyText(urls.googleUrl, "google")}
-                  disabled={!canExport}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {copiedType === "google" ? "Copied" : "Copy"}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => copyText(urls.googleUrl, "google")}
+                    disabled={!canExport}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {copiedType === "google" ? "Copied" : "Copy"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => copyText(googleHtml, "google-html")}
+                    disabled={!canExport}
+                    className="rounded-full border border-cyan-300/30 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-50 transition hover:bg-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {copiedType === "google-html" ? "HTML Copied" : "HTML"}
+                  </button>
+                </div>
               </div>
               <textarea
                 readOnly
                 value={urls.googleUrl}
                 className="min-h-24 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs text-white/90 outline-none"
-                placeholder="Select a start date and duration to generate the URL"
+                placeholder="Select start and end times to generate the URL"
               />
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-[#07101f] p-4">
               <div className="mb-2 flex items-center justify-between gap-3">
                 <div className="text-sm font-medium text-white/75">Outlook URL</div>
-                <button
-                  type="button"
-                  onClick={() => copyText(urls.outlookUrl, "outlook")}
-                  disabled={!canExport}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {copiedType === "outlook" ? "Copied" : "Copy"}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => copyText(urls.outlookUrl, "outlook")}
+                    disabled={!canExport}
+                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {copiedType === "outlook" ? "Copied" : "Copy"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => copyText(outlookHtml, "outlook-html")}
+                    disabled={!canExport}
+                    className="rounded-full border border-cyan-300/30 bg-cyan-400/10 px-3 py-1.5 text-xs font-semibold text-cyan-50 transition hover:bg-cyan-400/20 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {copiedType === "outlook-html" ? "HTML Copied" : "HTML"}
+                  </button>
+                </div>
               </div>
               <textarea
                 readOnly
                 value={urls.outlookUrl}
                 className="min-h-24 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs text-white/90 outline-none"
-                placeholder="Select a start date and duration to generate the URL"
-              />
-            </div>
-
-            <div className="rounded-2xl border border-white/10 bg-[#07101f] p-4">
-              <div className="mb-2 flex items-center justify-between gap-3">
-                <div className="text-sm font-medium text-white/75">HTML snippet</div>
-                <button
-                  type="button"
-                  onClick={() => copyText(htmlSnippet, "html")}
-                  disabled={!canExport}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {copiedType === "html" ? "Copied" : "Copy"}
-                </button>
-              </div>
-              <textarea
-                readOnly
-                value={htmlSnippet}
-                className="min-h-36 w-full rounded-xl border border-white/10 bg-black/20 px-3 py-2 font-mono text-xs text-white/90 outline-none"
-                placeholder="Choose an output mode to generate HTML"
+                placeholder="Select start and end times to generate the URL"
               />
             </div>
           </div>
