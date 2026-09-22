@@ -32,6 +32,11 @@ export default function Dashboard({ setView }: { setView: React.Dispatch<React.S
             <div className="font-semibold">Notebook</div>
           </button>
 
+          <button onClick={() => setView("flashcards")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Flashcards">
+            <img src="/flashcards.png" alt="Flashcards" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Flashcards</div>
+          </button>
+
           <button onClick={() => setView("quickmarks")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Quickmarks">
             <img src="/quickmark.png" alt="Quickmarks" className="w-20 h-20 object-contain" />
             <div className="font-semibold">Quickmarks</div>
@@ -76,6 +81,16 @@ export default function Dashboard({ setView }: { setView: React.Dispatch<React.S
           <button onClick={() => setView("dice")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Dice">
             <img src="/die.png" alt="Dice" className="w-20 h-20 object-contain" />
             <div className="font-semibold">Dice</div>
+          </button>
+
+          <button onClick={() => setView("blackjack")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Blackjack">
+            <img src="/blackjack.png" alt="Blackjack" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Blackjack</div>
+          </button>
+
+          <button onClick={() => setView("backgammon")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Backgammon">
+            <img src="/backgammon.png" alt="Backgammon" className="w-20 h-20 object-contain" />
+            <div className="font-semibold">Backgammon</div>
           </button>
 
           <button onClick={() => setView("memoji")} className="p-4 border rounded hover:shadow-md flex flex-col items-center gap-2" aria-label="Open Memoji">

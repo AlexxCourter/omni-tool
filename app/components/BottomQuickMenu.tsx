@@ -5,15 +5,18 @@ import type { View } from "../types";
 
 const STORAGE_KEY = "omni_quickselect_v1";
 
-const AVAILABLE: { id: View; label: string; icon: string }[] = [
+const AVAILABLE: { id: View; label: string; icon?: string; emoji?: string }[] = [
   { id: "calculator", label: "Calculator", icon: "/calculator.png" },
   { id: "notebook", label: "Notebook", icon: "/notebook.png" },
+  { id: "flashcards", label: "Flashcards", icon: "/flashcards.png" },
   { id: "worldclock", label: "World Clock", icon: "/clock.png" },
   { id: "dice", label: "Dice", icon: "/die.png" },
+  { id: "blackjack", label: "Blackjack", icon: "/blackjack.png" },
   { id: "counter", label: "Counter", icon: "/counter.png" },
   { id: "dashboard", label: "Dashboard", icon: "/omnitool.png" },
   { id: "quickmarks", label: "Quickmarks", icon: "/quickmark.png" },
   { id: "soundboard", label: "Soundboard", icon: "/soundboard.png" },
+  { id: "backgammon", label: "Backgammon", icon: "/backgammon.png" },
   { id: "wisdomcube", label: "Wisdom Cube", icon: "/wisdomcube.png" },
   { id: "calendarinvite", label: "Calendar Invite", icon: "/caleventbuilder.png" },
 ];
@@ -64,7 +67,13 @@ export default function BottomQuickMenu({ setView }: { setView: React.Dispatch<R
                 if (!info) return null;
                 return (
                   <button key={s} onClick={() => setView(s)} className="p-0 h-10 w-10 flex items-center justify-center">
-                    {info.icon ? <img src={info.icon} alt={info.label} className="w-8 h-8 object-contain" /> : <div className="w-8 h-8 bg-gray-700 rounded" />}
+                    {info.icon ? (
+                      <img src={info.icon} alt={info.label} className="w-8 h-8 object-contain" />
+                    ) : info.emoji ? (
+                      <div className="w-8 h-8 flex items-center justify-center text-xl">{info.emoji}</div>
+                    ) : (
+                      <div className="w-8 h-8 bg-gray-700 rounded" />
+                    )}
                   </button>
                 );
               })}
@@ -108,6 +117,8 @@ export default function BottomQuickMenu({ setView }: { setView: React.Dispatch<R
                 >
                   {a.icon ? (
                     <img src={a.icon} alt={a.label} className="w-10 h-10 object-contain" />
+                  ) : a.emoji ? (
+                    <div className="w-10 h-10 flex items-center justify-center text-2xl">{a.emoji}</div>
                   ) : (
                     <div className="w-10 h-10 bg-gray-700 rounded flex items-center justify-center text-white">{a.label[0]}</div>
                   )}

@@ -4,8 +4,11 @@ import React, { useState } from "react";
 import Header from "./components/Header";
 import Calculator from "./components/Calculator";
 import NotebookApp from "./components/Notebook";
+import Flashcards from "./components/Flashcards";
 import Counter from "./components/Counter";
 import Dice from "./components/Dice";
+import Blackjack from "./components/Blackjack";
+import Backgammon from "./components/Backgammon";
 import WorldClock from "./components/WorldClock";
 import Dashboard from "./components/Dashboard";
 import Quickmarks from "./components/Quickmarks";
@@ -48,8 +51,11 @@ export default function ClientApp({ children }: { children: React.ReactNode }) {
           {view === "dashboard" && <Dashboard setView={setView} />}
           {view === "calculator" && <Calculator />}
           {view === "notebook" && <NotebookApp />}
+          {view === "flashcards" && <Flashcards />}
           {view === "counter" && <Counter />}
           {view === "dice" && <Dice />}
+          {view === "blackjack" && <Blackjack />}
+          {view === "backgammon" && <Backgammon />}
           {view === "quickmarks" && <Quickmarks />}
           {view === "soundboard" && <Soundboard />}
           {view === "memoji" && <Memoji />}

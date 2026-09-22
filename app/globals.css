@@ -636,6 +636,401 @@ body {
 /* Ensure FontAwesome SVG icons inherit the CSS currentColor */
 .chess-board .svg-inline--fa, .chess-board svg { fill: currentColor; color: inherit; }
 
+/* Blackjack card-table styling */
+.blackjack-shell { color: var(--foreground); }
+.blackjack-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.04);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.26em;
+}
+.blackjack-status { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
+.blackjack-table-shell {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top, rgba(255,255,255,0.08), transparent 38%),
+    linear-gradient(180deg, rgba(8, 50, 28, 0.96), rgba(6, 33, 19, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -60px 120px rgba(0,0,0,0.18),
+    0 28px 80px rgba(0,0,0,0.35);
+}
+  .blackjack-result-overlay {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 42%;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    text-align: center;
+    background: radial-gradient(circle at center, rgba(0,0,0,0.18), rgba(0,0,0,0.54));
+    backdrop-filter: blur(2px);
+    pointer-events: none;
+  }
+  .blackjack-result-message {
+    font-size: clamp(3rem, 10vw, 6.5rem);
+    line-height: 0.92;
+    letter-spacing: 0.18em;
+    text-indent: 0.18em;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-shadow: 0 10px 30px rgba(0,0,0,0.45);
+  }
+  .blackjack-result-message.win { color: #d9ffab; }
+  .blackjack-result-message.push { color: #7be8ff; }
+  .blackjack-result-message.lose { color: #ffb4b4; }
+  .blackjack-result-hint {
+    padding: 0.5rem 0.9rem;
+    border-radius: 9999px;
+    background: rgba(0,0,0,0.38);
+    border: 1px solid rgba(255,255,255,0.12);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+.blackjack-table-shell::before,
+.blackjack-table-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.blackjack-table-shell::before {
+  background:
+    radial-gradient(circle at 50% 18%, rgba(255,255,255,0.08), transparent 20%),
+    radial-gradient(circle at 20% 20%, rgba(123, 232, 255, 0.08), transparent 18%),
+    radial-gradient(circle at 80% 20%, rgba(255, 189, 89, 0.08), transparent 18%);
+  opacity: 0.7;
+}
+.blackjack-table-shell::after {
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.22));
+}
+.blackjack-table-top,
+.blackjack-zone,
+.blackjack-table-divider {
+  position: relative;
+  z-index: 1;
+}
+.blackjack-table-divider {
+  margin-top: 1rem;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+}
+.blackjack-zone {
+  padding: 0.6rem 0.8rem 0.9rem;
+  border-radius: 1.2rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  backdrop-filter: blur(2px);
+}
+.blackjack-zone-label {
+  margin-bottom: 0.7rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.blackjack-control-rail {
+  position: relative;
+  z-index: 2;
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255,255,255,0.09);
+  background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.9rem;
+}
+.blackjack-control-copy {
+  min-width: 180px;
+}
+.blackjack-control-title {
+  font-weight: 700;
+}
+.blackjack-control-subtitle {
+  margin-top: 0.2rem;
+  font-size: 0.82rem;
+  opacity: 0.72;
+}
+.blackjack-control-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.blackjack-action-btn {
+  padding: 0.75rem 1rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.08);
+  color: var(--foreground);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.blackjack-action-btn.primary {
+  background: linear-gradient(180deg, rgba(123,232,255,0.2), rgba(123,232,255,0.08));
+  border-color: rgba(123,232,255,0.35);
+}
+.blackjack-action-btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.blackjack-cards {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 116px;
+}
+.blackjack-card-wrap {
+  width: 72px;
+  height: 104px;
+  position: relative;
+  transform-style: preserve-3d;
+  animation: blackjack-deal-in 420ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+.blackjack-card-wrap.flip {
+  animation: blackjack-flip-in 420ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+.blackjack-card-surface {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.2);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+}
+.blackjack-card-front {
+  background: linear-gradient(180deg, #f8fafc, #d8edf8);
+  font-weight: 800;
+}
+.blackjack-card-front.red { color: #be123c; }
+.blackjack-card-front.black { color: #111827; }
+.blackjack-card-back {
+  transform: rotateY(180deg);
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,0.16) 0 12%, transparent 13% 100%),
+    linear-gradient(135deg, #1f3f34 0%, #0f241f 36%, #16392f 100%);
+  color: #d4f5e4;
+}
+.blackjack-card-front .card-suit {
+  align-self: flex-end;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.back-pattern {
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  place-items: center;
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+.back-pattern span:nth-child(1) { transform: translate(-3px, -3px); }
+.back-pattern span:nth-child(2) { transform: translate(3px, -2px); }
+.back-pattern span:nth-child(3) { transform: translate(-2px, 3px); }
+.back-pattern span:nth-child(4) { transform: translate(3px, 2px); }
+
+@keyframes blackjack-deal-in {
+  0% { opacity: 0; transform: translateY(-18px) scale(0.82) rotate(-8deg); }
+  65% { opacity: 1; transform: translateY(3px) scale(1.03) rotate(2deg); }
+  100% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+}
+
+@keyframes blackjack-flip-in {
+  0% { opacity: 0; transform: perspective(900px) rotateY(180deg) translateY(-6px); }
+  60% { opacity: 1; transform: perspective(900px) rotateY(210deg) translateY(0); }
+  100% { opacity: 1; transform: perspective(900px) rotateY(180deg) translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .blackjack-card-wrap,
+  .blackjack-card-wrap.flip {
+    animation: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .blackjack-control-rail {
+    padding: 0.85rem;
+  }
+
+  .blackjack-control-buttons {
+    width: 100%;
+  }
+
+  .blackjack-action-btn {
+    flex: 1 1 0;
+    justify-content: center;
+  }
+}
+
+/* Backgammon board styles */
+.backgammon-shell { color: var(--foreground); }
+.backgammon-status { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
+.backgammon-board {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(13, minmax(0, 1fr));
+  gap: 6px;
+  padding: 12px;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: linear-gradient(180deg, rgba(8, 18, 36, 0.96), rgba(5, 10, 22, 0.98));
+  box-shadow: 0 18px 60px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.backgammon-point {
+  position: relative;
+  min-height: 168px;
+  border: none;
+  border-radius: 14px;
+  overflow: hidden;
+  padding: 10px 4px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  background: transparent;
+}
+.backgammon-point.top { align-items: flex-start; }
+.backgammon-point.bottom { align-items: flex-end; }
+.backgammon-point::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.95;
+}
+.backgammon-point.top::before {
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+}
+.backgammon-point.bottom::before {
+  clip-path: polygon(50% 0, 0 100%, 100% 100%);
+}
+.backgammon-point.light::before {
+  background: linear-gradient(180deg, rgba(250, 214, 165, 0.95), rgba(195, 130, 79, 0.92));
+}
+.backgammon-point.dark::before {
+  background: linear-gradient(180deg, rgba(104, 44, 43, 0.95), rgba(55, 18, 18, 0.96));
+}
+.backgammon-point .point-label {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  opacity: 0.82;
+  z-index: 1;
+}
+.backgammon-point.top .point-label { top: 8px; }
+.backgammon-point.bottom .point-label { bottom: 8px; }
+.checker-stack {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+}
+.checker-stack.top-stack { justify-content: flex-start; padding-top: 20px; }
+.checker-stack.bottom-stack { justify-content: flex-end; padding-bottom: 20px; }
+.checker-token {
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 4px 10px rgba(0,0,0,0.24);
+}
+.checker-white {
+  background: radial-gradient(circle at 30% 28%, #ffffff 0%, #d5f7ff 35%, #7be8ff 72%, #2aa7c5 100%);
+}
+.checker-black {
+  background: radial-gradient(circle at 30% 28%, #d7dde5 0%, #64707f 34%, #2f3742 72%, #11161f 100%);
+}
+.checker-count {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+.backgammon-bar {
+  grid-column: 7;
+  grid-row: 1 / span 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 6px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.bar-half {
+  min-height: calc(50% - 3px);
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(2, 6, 23, 0.22);
+  color: var(--foreground);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 4px;
+}
+.backgammon-point.selected-square,
+.bar-half.selected-square {
+  outline: 3px solid rgba(107, 219, 255, 0.72);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.18), 0 0 14px rgba(107, 219, 255, 0.24);
+}
+.backgammon-point.move-target {
+  box-shadow: inset 0 0 0 4px rgba(59, 255, 153, 0.28), 0 0 12px rgba(59, 255, 153, 0.12);
+}
+
+@media (max-width: 640px) {
+  .backgammon-board {
+    gap: 4px;
+    padding: 8px;
+  }
+
+  .backgammon-point {
+    min-height: 116px;
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .checker-token {
+    width: 1.28rem;
+    height: 1.28rem;
+  }
+
+  .checker-stack.top-stack { padding-top: 18px; }
+  .checker-stack.bottom-stack { padding-bottom: 18px; }
+}
+
 @media (max-width: 640px) {
   /* Expand the board to nearly full viewport width and center it, ignoring parent padding */
   .checkers-board {
@@ -687,6 +1082,63 @@ body {
 .cube-face-left { background: linear-gradient(180deg,#7be8ff,#2fa6c9); transform: rotateY(-90deg) translateZ(60px); }
 .cube-face-right { background: linear-gradient(180deg,#ff6b6b,#c14b4b); transform: rotateY(90deg) translateZ(60px); }
 .cube-face-top { background: linear-gradient(180deg,#f7ff7b,#c9c84b); transform: rotateX(90deg) translateZ(60px); }
+
+/* Flashcards flip animation */
+.flashcard-tile {
+  perspective: 1000px;
+  background: transparent;
+  border-color: rgba(255,255,255,0.14);
+}
+
+.flashcard-tile-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  transform-style: preserve-3d;
+  transition: transform 360ms cubic-bezier(0.22, 0.8, 0.25, 1);
+}
+
+.flashcard-tile.is-flipped .flashcard-tile-inner {
+  transform: rotateY(180deg);
+}
+
+.flashcard-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.05);
+}
+
+.flashcard-face > div {
+  width: 100%;
+  text-align: center;
+}
+
+.flashcard-front {
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+}
+
+.flashcard-back {
+  transform: rotateY(180deg);
+  background: linear-gradient(180deg, rgba(123, 232, 255, 0.12), rgba(123, 232, 255, 0.04));
+}
+
+.flashcard-study .flashcard-face {
+  padding: 1.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flashcard-tile-inner {
+    transition: none;
+  }
+}
 .cube-face-bottom { background: linear-gradient(180deg,#b28eff,#7b4fb8); transform: rotateX(-90deg) translateZ(60px); }
 
 .cube-icon { background: linear-gradient(135deg,#0b6cff,#3aff99); border-radius:6px; box-shadow: 0 6px 18px rgba(0,0,0,0.4); transform: rotate3d(0.4,0.6,0.2,20deg); }

@@ -30,6 +30,7 @@ export default function Header({
             <option value="calculator">Calculator</option>
             <option value="counter">Counter</option>
             <option value="notebook">Notebook</option>
+            <option value="flashcards">Flashcards</option>
             <option value="quickmarks">Quickmarks</option>
             <option value="budget">Budget</option>
             <option value="worldclock">World Clock</option>
@@ -41,6 +42,8 @@ export default function Header({
             <option value="checkers">Checkers</option>
             <option value="chess">Chess</option>
             <option value="dice">Dice</option>
+            <option value="blackjack">Blackjack</option>
+            <option value="backgammon">Backgammon</option>
             <option value="memoji">Memoji</option>
             <option value="soundboard">Soundboard</option>
             <option value="wisdomcube">Wisdom Cube</option>
