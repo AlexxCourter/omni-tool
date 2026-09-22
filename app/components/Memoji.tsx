@@ -53,11 +53,11 @@ export default function Memoji() {
             }
             return { ...c, flipped: false };
           }
+          return c;
         })
       );
       setFirst(null);
       setSecond(null);
-      setLock(false);
       setMoves((m) => m + 1);
     }, 700);
   }, [first, second, cards]);

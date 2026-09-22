@@ -119,11 +119,11 @@ export default function DietPlan() {
     setWeekPlan((prev) => {
       const dayMeals = { ...prev[day] };
       const meal = { ...dayMeals[mealType] };
-      
+
       if (field === "dishName") {
-        meal.dishName = value;
+        meal.dishName = String(value);
       } else if (field === "calories") {
-        meal.calories = value;
+        meal.calories = Number(value);
       }
 
       dayMeals[mealType] = meal;

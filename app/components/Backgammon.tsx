@@ -139,13 +139,14 @@ function canLandOnPoint(state: GameState, color: Color, point: number) {
 
 function getLegalTargetsForSource(state: GameState, source: Source): MoveTarget[] {
   const color = state.turn;
+  if (!source) return [];
   if (!isSourceOwned(state, source, color)) return [];
-  if (state.bar[color] > 0 && source?.kind !== "bar") return [];
+  if (state.bar[color] > 0 && source.kind !== "bar") return [];
 
   const targets = new Map<string, MoveTarget>();
 
   for (const die of state.dice) {
-    if (source?.kind === "bar") {
+    if (source.kind === "bar") {
       const entryPoint = color === "white" ? 25 - die : die;
       if (canEnterFromBar(state, color, die)) {
         const key = `point:${entryPoint}`;
