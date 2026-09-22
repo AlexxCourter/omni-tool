@@ -199,7 +199,7 @@ export default function ButtonGenerator() {
     let hoverBoxShadow = shadowValue;
     let additionalBaseStyles = "";
     let additionalHoverStyles = "";
-    let keyframes = "";
+    const keyframes = "";
 
     switch (buttonStyle.hoverEffect) {
       case "lift":

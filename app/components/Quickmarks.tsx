@@ -23,23 +23,21 @@ function faviconFor(url: string) {
 }
 
 export default function Quickmarks() {
-  const [items, setItems] = useState<Quick[]>(Array(8).fill(null));
+  const [items, setItems] = useState<Quick[]>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Array<Quick>;
+        return Array(8).fill(null).map((_, i) => parsed[i] ?? null);
+      }
+    } catch (e) {
+      // ignore
+    }
+    return Array(8).fill(null);
+  });
   const [editMode, setEditMode] = useState(false);
   const [modalIndex, setModalIndex] = useState<number | null>(null);
   const [modalValue, setModalValue] = useState("");
-
-  useEffect(() => {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw) as Array<Quick>;
-        const filled = Array(8).fill(null).map((_, i) => parsed[i] ?? null);
-        setItems(filled);
-      } catch (e) {
-        // ignore
-      }
-    }
-  }, []);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(items));

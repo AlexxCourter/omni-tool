@@ -23,19 +23,18 @@ const AVAILABLE: { id: View; label: string; icon?: string; emoji?: string }[] = 
 
 export default function BottomQuickMenu({ setView }: { setView: React.Dispatch<React.SetStateAction<View>> }) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<View[]>([]);
-
-  useEffect(() => {
+  const [selected, setSelected] = useState<View[]>(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as View[];
-        setSelected(parsed.slice(0, 4));
+        return parsed.slice(0, 4);
       }
     } catch (e) {
       // ignore
     }
-  }, []);
+    return [];
+  });
 
   useEffect(() => {
     try {

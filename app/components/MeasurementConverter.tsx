@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 type MeasurementCategory = "distance" | "volume" | "weight";
 
@@ -42,6 +42,17 @@ const WEIGHT_UNITS: Record<string, ConversionUnit> = {
   metricTons: { name: "Metric Tons", toBase: 1000000 },
 };
 
+function getUnitsForCategory(category: MeasurementCategory) {
+  switch (category) {
+    case "distance":
+      return DISTANCE_UNITS;
+    case "volume":
+      return VOLUME_UNITS;
+    case "weight":
+      return WEIGHT_UNITS;
+  }
+}
+
 export default function MeasurementConverter() {
   const [category, setCategory] = useState<MeasurementCategory>("distance");
   const [fromUnit, setFromUnit] = useState<string>("meters");
@@ -50,25 +61,8 @@ export default function MeasurementConverter() {
   const [toValue, setToValue] = useState<string>("");
 
   const getCurrentUnits = () => {
-    switch (category) {
-      case "distance":
-        return DISTANCE_UNITS;
-      case "volume":
-        return VOLUME_UNITS;
-      case "weight":
-        return WEIGHT_UNITS;
-    }
+    return getUnitsForCategory(category);
   };
-
-  // Reset units when category changes
-  useEffect(() => {
-    const units = getCurrentUnits();
-    const unitKeys = Object.keys(units);
-    setFromUnit(unitKeys[0]);
-    setToUnit(unitKeys[1]);
-    setFromValue("");
-    setToValue("");
-  }, [category]);
 
   const convert = (value: string, from: string, to: string): string => {
     if (!value || value === "" || isNaN(Number(value))) return "";
@@ -88,7 +82,11 @@ export default function MeasurementConverter() {
   };
 
   const handleCategoryChange = (newCategory: MeasurementCategory) => {
-    // Clear values immediately to prevent conversion errors
+    const units = getUnitsForCategory(newCategory);
+    const unitKeys = Object.keys(units);
+
+    setFromUnit(unitKeys[0]);
+    setToUnit(unitKeys[1]);
     setFromValue("");
     setToValue("");
     setCategory(newCategory);

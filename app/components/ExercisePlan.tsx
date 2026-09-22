@@ -26,18 +26,32 @@ const DAYS = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", 
 const DAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function ExercisePlan() {
-  const [weekPlan, setWeekPlan] = useState<WeekPlan>({
-    sunday: { exercises: [], descriptor: "Rest" },
-    monday: { exercises: [], descriptor: "Rest" },
-    tuesday: { exercises: [], descriptor: "Rest" },
-    wednesday: { exercises: [], descriptor: "Rest" },
-    thursday: { exercises: [], descriptor: "Rest" },
-    friday: { exercises: [], descriptor: "Rest" },
-    saturday: { exercises: [], descriptor: "Rest" },
+  const [weekPlan, setWeekPlan] = useState<WeekPlan>(() => {
+    const emptyWeek: WeekPlan = {
+      sunday: { exercises: [], descriptor: "Rest" },
+      monday: { exercises: [], descriptor: "Rest" },
+      tuesday: { exercises: [], descriptor: "Rest" },
+      wednesday: { exercises: [], descriptor: "Rest" },
+      thursday: { exercises: [], descriptor: "Rest" },
+      friday: { exercises: [], descriptor: "Rest" },
+      saturday: { exercises: [], descriptor: "Rest" },
+    };
+
+    try {
+      const saved = localStorage.getItem("exercisePlan");
+      if (saved) return JSON.parse(saved) as WeekPlan;
+    } catch {
+      // ignore malformed local data
+    }
+
+    return emptyWeek;
   });
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
-  const [currentDay, setCurrentDay] = useState<string>("");
+  const [currentDay] = useState<string>(() => {
+    const today = new Date().getDay();
+    return DAYS[today];
+  });
 
   // Form fields for adding exercise
   const [exerciseName, setExerciseName] = useState("");
@@ -57,22 +71,6 @@ export default function ExercisePlan() {
 
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem("exercisePlan");
-    if (saved) {
-      try {
-        setWeekPlan(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse saved exercise plan", e);
-      }
-    }
-
-    // Determine current day
-    const today = new Date().getDay(); // 0 = Sunday
-    setCurrentDay(DAYS[today]);
-  }, []);
-
   // Save to localStorage whenever weekPlan changes
   useEffect(() => {
     if (Object.keys(weekPlan).length > 0) {
@@ -80,23 +78,7 @@ export default function ExercisePlan() {
     }
   }, [weekPlan]);
 
-  // Timer effect
-  useEffect(() => {
-    if (isRunning && timeLeft > 0) {
-      intervalRef.current = setInterval(() => {
-        setTimeLeft((t) => t - 1);
-      }, 1000);
-    } else if (timeLeft === 0 && isRunning) {
-      setIsRunning(false);
-      handleTimerComplete();
-    }
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [isRunning, timeLeft]);
-
-  const handleTimerComplete = () => {
+  function handleTimerComplete() {
     const exercises = weekPlan[currentDay]?.exercises || [];
     const currentExercise = exercises[currentExerciseIndex];
 
@@ -119,13 +101,35 @@ export default function ExercisePlan() {
       setCurrentSet(1);
       setTrackerPhase("exercise");
       setIsResting(false);
-      
+
       const nextExercise = exercises[currentExerciseIndex + 1];
       if (nextExercise && nextExercise.type === "timed") {
         setTimeLeft(nextExercise.duration || 0);
       }
     }
-  };
+  }
+
+  // Timer effect
+  useEffect(() => {
+    let completionTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    if (isRunning && timeLeft > 0) {
+      intervalRef.current = setInterval(() => {
+        setTimeLeft((t) => t - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && isRunning) {
+      // Defer transition updates to avoid synchronous state writes in effect body.
+      completionTimeout = setTimeout(() => {
+        setIsRunning(false);
+        handleTimerComplete();
+      }, 0);
+    }
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (completionTimeout) clearTimeout(completionTimeout);
+    };
+  }, [isRunning, timeLeft]);
 
   const toggleEditMode = () => {
     if (isEditMode) {
@@ -251,31 +255,35 @@ export default function ExercisePlan() {
   useEffect(() => {
     // Handle rest phase completion for rep exercises
     if (trackerPhase === "rest" && timeLeft === 0 && isResting) {
-      setIsResting(false);
-      setIsRunning(false);
-      
-      const exercises = weekPlan[currentDay]?.exercises || [];
-      const currentExercise = exercises[currentExerciseIndex];
+      const transitionTimeout = setTimeout(() => {
+        setIsResting(false);
+        setIsRunning(false);
 
-      if (currentExercise && currentExercise.type === "repetitions") {
-        if (currentSet < (currentExercise.sets || 1)) {
-          // Continue to next set
-          setCurrentSet((prev) => prev + 1);
-          setTrackerPhase("exercise");
-        } else {
-          // Move to next exercise
-          setCurrentExerciseIndex((prev) => prev + 1);
-          setCurrentSet(1);
-          setTrackerPhase("exercise");
-          
-          const nextExercise = exercises[currentExerciseIndex + 1];
-          if (nextExercise && nextExercise.type === "timed") {
-            setTimeLeft(nextExercise.duration || 0);
+        const exercises = weekPlan[currentDay]?.exercises || [];
+        const currentExercise = exercises[currentExerciseIndex];
+
+        if (currentExercise && currentExercise.type === "repetitions") {
+          if (currentSet < (currentExercise.sets || 1)) {
+            // Continue to next set
+            setCurrentSet((prev) => prev + 1);
+            setTrackerPhase("exercise");
+          } else {
+            // Move to next exercise
+            setCurrentExerciseIndex((prev) => prev + 1);
+            setCurrentSet(1);
+            setTrackerPhase("exercise");
+
+            const nextExercise = exercises[currentExerciseIndex + 1];
+            if (nextExercise && nextExercise.type === "timed") {
+              setTimeLeft(nextExercise.duration || 0);
+            }
           }
         }
-      }
+      }, 0);
+
+      return () => clearTimeout(transitionTimeout);
     }
-  }, [timeLeft, isResting, trackerPhase]);
+  }, [timeLeft, isResting, trackerPhase, weekPlan, currentDay, currentExerciseIndex, currentSet]);
 
   const resetTracker = () => {
     setCurrentExerciseIndex(0);
@@ -496,7 +504,7 @@ export default function ExercisePlan() {
             <div className="text-center py-8">
               <div className="text-6xl mb-4">🎉</div>
               <h3 className="text-2xl font-semibold mb-2">Workout Complete!</h3>
-              <p className="opacity-70 mb-4">Great job finishing today's exercises!</p>
+              <p className="opacity-70 mb-4">Great job finishing today&apos;s exercises!</p>
               <button
                 onClick={resetTracker}
                 className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700"
@@ -586,7 +594,7 @@ export default function ExercisePlan() {
 
               {/* Exercise List */}
               <div className="border-t pt-4">
-                <h4 className="font-semibold mb-2">Today's Exercises:</h4>
+                <h4 className="font-semibold mb-2">Today&apos;s Exercises:</h4>
                 <div className="space-y-2">
                   {todayExercises.map((exercise, idx) => (
                     <div

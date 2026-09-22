@@ -55,41 +55,38 @@ const createEmptyDay = (): DayMeals => ({
 });
 
 export default function DietPlan() {
-  const [weekPlan, setWeekPlan] = useState<WeekPlan>({
-    sunday: createEmptyDay(),
-    monday: createEmptyDay(),
-    tuesday: createEmptyDay(),
-    wednesday: createEmptyDay(),
-    thursday: createEmptyDay(),
-    friday: createEmptyDay(),
-    saturday: createEmptyDay(),
+  const [weekPlan, setWeekPlan] = useState<WeekPlan>(() => {
+    const emptyWeek: WeekPlan = {
+      sunday: createEmptyDay(),
+      monday: createEmptyDay(),
+      tuesday: createEmptyDay(),
+      wednesday: createEmptyDay(),
+      thursday: createEmptyDay(),
+      friday: createEmptyDay(),
+      saturday: createEmptyDay(),
+    };
+    try {
+      const saved = localStorage.getItem("dietPlan");
+      if (saved) return JSON.parse(saved) as WeekPlan;
+    } catch (e) {
+      // ignore malformed local data
+    }
+    return emptyWeek;
   });
   const [isEditMode, setIsEditMode] = useState(false);
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
-  const [currentDay, setCurrentDay] = useState<string>("");
-  const [viewingDay, setViewingDay] = useState<string>("");
+  const [currentDay] = useState<string>(() => {
+    const today = new Date().getDay();
+    return DAYS[today];
+  });
+  const [viewingDay, setViewingDay] = useState<string>(() => {
+    const today = new Date().getDay();
+    return DAYS[today];
+  });
   
   // Modal state for ingredient warning
   const [showModal, setShowModal] = useState(false);
   const [modalContext, setModalContext] = useState<{ day: string; mealType: MealType } | null>(null);
-
-  // Load from localStorage on mount
-  useEffect(() => {
-    const saved = localStorage.getItem("dietPlan");
-    if (saved) {
-      try {
-        setWeekPlan(JSON.parse(saved));
-      } catch (e) {
-        console.error("Failed to parse saved diet plan", e);
-      }
-    }
-
-    // Determine current day
-    const today = new Date().getDay(); // 0 = Sunday
-    const todayName = DAYS[today];
-    setCurrentDay(todayName);
-    setViewingDay(todayName);
-  }, []);
 
   // Save to localStorage whenever weekPlan changes
   useEffect(() => {
@@ -118,7 +115,7 @@ export default function DietPlan() {
     }
   };
 
-  const updateMeal = (day: string, mealType: MealType, field: string, value: any) => {
+  const updateMeal = (day: string, mealType: MealType, field: "dishName" | "calories", value: string | number) => {
     setWeekPlan((prev) => {
       const dayMeals = { ...prev[day] };
       const meal = { ...dayMeals[mealType] };
@@ -219,7 +216,7 @@ export default function DietPlan() {
     });
   };
 
-  const updateIngredient = (day: string, mealType: MealType, ingredientId: string, field: string, value: any) => {
+  const updateIngredient = (day: string, mealType: MealType, ingredientId: string, field: "name" | "calories", value: string | number) => {
     setWeekPlan((prev) => {
       const dayMeals = { ...prev[day] };
       const meal = { ...dayMeals[mealType] };
@@ -516,7 +513,7 @@ export default function DietPlan() {
           <div className="bg-[var(--background)] border border-red-400/50 rounded-lg p-6 max-w-md mx-4">
             <h3 className="text-xl font-bold mb-4 text-red-400">⚠️ Warning</h3>
             <p className="mb-6 opacity-90">
-              Closing ingredient details will delete all ingredient information you've entered. Are you sure you want to continue?
+              Closing ingredient details will delete all ingredient information you&apos;ve entered. Are you sure you want to continue?
             </p>
             <div className="flex gap-3 justify-end">
               <button

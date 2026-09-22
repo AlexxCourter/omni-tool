@@ -20,7 +20,15 @@ const FOOD_EMOJI = ["🍪", "🍕", "🍓", "🍔"];
 const SPRITE_CHOICES = ["Cat", "Dog", "Alligator", "Panda", "Frog"];
 
 export default function OmniPet() {
-  const [pet, setPet] = useState<Pet | null>(null);
+  const [pet, setPet] = useState<Pet | null>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw) as Pet;
+    } catch (e) {
+      // ignore
+    }
+    return null;
+  });
   const [overlayEmoji, setOverlayEmoji] = useState<string | null>(null);
   const [overlayVisible, setOverlayVisible] = useState(false);
   const [overlayKey, setOverlayKey] = useState(0);
@@ -32,9 +40,10 @@ export default function OmniPet() {
   const [showNameModal, setShowNameModal] = useState(false);
   const [nameInput, setNameInput] = useState("");
   const [spriteIndex, setSpriteIndex] = useState(0);
-  const [spriteError, setSpriteError] = useState(false);
+  const [spriteErrorFor, setSpriteErrorFor] = useState<string | null>(null);
   const overlayHideRef = useRef<number | null>(null);
   const overlayRemoveRef = useRef<number | null>(null);
+  const foodIndexRef = useRef(0);
   const OVERLAY_EXIT_MS = 220;
   const OVERLAY_DEFAULT_MS = 900;
   // game selection: 'oldmaid' (cards), 'fetch' (timing), 'random' (fallback)
@@ -118,15 +127,6 @@ export default function OmniPet() {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setPet(JSON.parse(raw) as Pet);
-    } catch (e) {
-      // ignore
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
       if (pet) localStorage.setItem(STORAGE_KEY, JSON.stringify(pet));
       else localStorage.removeItem(STORAGE_KEY);
     } catch (e) {
@@ -158,7 +158,8 @@ export default function OmniPet() {
       setPet({ ...pet, happiness: Math.max(0, pet.happiness - 1) });
       return;
     }
-    const food = FOOD_EMOJI[Math.floor(Math.random() * FOOD_EMOJI.length)];
+    const food = FOOD_EMOJI[foodIndexRef.current % FOOD_EMOJI.length];
+    foodIndexRef.current += 1;
     showOverlay(food);
     setPet({ ...pet, hunger: Math.min(100, pet.hunger + 20) });
   }
@@ -285,6 +286,7 @@ export default function OmniPet() {
     const elapsed = now.getTime() - last.getTime();
     const ticks = Math.floor(elapsed / msPerTick);
     if (ticks > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPet((p) => {
         if (!p) return p;
         const hunger = Math.max(0, p.hunger - ticks);
@@ -294,6 +296,7 @@ export default function OmniPet() {
       });
     } else if (!pet.last_tick) {
       // store initial last_tick
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setPet((p) => p ? { ...p, last_tick: now.toISOString() } : p);
     }
 
@@ -317,6 +320,7 @@ export default function OmniPet() {
     if (pet.growth_stage < 2) {
       const age = ageDays(pet.birth_date);
       if (age >= 1 && pet.hunger >= 75 && pet.happiness >= 100) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPet((p) => p ? { ...p, growth_stage: 2 } : p);
       }
     }
@@ -324,6 +328,7 @@ export default function OmniPet() {
     if (pet.growth_stage < 3) {
       const age = ageDays(pet.birth_date);
       if (age >= 10 && pet.hunger >= 75 && pet.happiness >= 500) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPet((p) => p ? { ...p, growth_stage: 3 } : p);
       }
     }
@@ -335,11 +340,6 @@ export default function OmniPet() {
     const t = setInterval(() => setSpriteIndex((s) => 1 - s), 2000);
     return () => clearInterval(t);
   }, [pet?.growth_stage, pet?.sprite_set]);
-
-  // reset sprite error when pet or sprite frame changes
-  useEffect(() => {
-    setSpriteError(false);
-  }, [pet?.growth_stage, pet?.sprite_set, spriteIndex]);
 
   // helper to build sprite src path based on growth stage and chosen set
   function spriteSrc() {
@@ -375,13 +375,15 @@ export default function OmniPet() {
           )}
 
           <div className="relative w-48 h-48 bg-gradient-to-b from-gray-800 to-gray-700 rounded-lg flex items-center justify-center overflow-hidden">
-            {pet && (
-              spriteError ? (
+            {pet && (() => {
+              const src = spriteSrc();
+              const spriteError = src != null && spriteErrorFor === src;
+              return spriteError ? (
                 <div className="text-6xl">🐾</div>
               ) : (
-                <img src={spriteSrc()} alt={`${pet.name || 'Omni pet'} sprite`} onError={() => setSpriteError(true)} className="w-40 h-40 object-contain" />
-              )
-            )}
+                <img src={src} alt={`${pet.name || 'Omni pet'} sprite`} onError={() => setSpriteErrorFor(src ?? null)} className="w-40 h-40 object-contain" />
+              );
+            })()}
           </div>
 
           <div className="w-full flex justify-between items-center">

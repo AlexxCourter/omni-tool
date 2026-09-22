@@ -269,7 +269,7 @@ export default function WorldClock() {
           }}
         >
           <div className="text-5xl mb-3">🌐</div>
-          <p className="text-sm">No timezones added yet. Click "Add Timezone" to start tracking!</p>
+          <p className="text-sm">No timezones added yet. Click &quot;Add Timezone&quot; to start tracking!</p>
         </div>
       )}
     </div>

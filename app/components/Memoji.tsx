@@ -20,16 +20,23 @@ function shuffle<T>(arr: T[]) {
   return a;
 }
 
+function createCards() {
+  // pick 6 random unique emojis from the pool for variety
+  const poolShuffled = shuffle(EMOJI_POOL).slice(0, 6);
+  const pairEmojis = poolShuffled.concat(poolShuffled);
+  return shuffle(pairEmojis).map((emoji, idx) => ({
+    id: idx,
+    emoji,
+    flipped: false,
+    matched: false,
+  }));
+}
+
 export default function Memoji() {
-  const [cards, setCards] = useState<Card[]>([]);
+  const [cards, setCards] = useState<Card[]>(() => createCards());
   const [first, setFirst] = useState<number | null>(null);
   const [second, setSecond] = useState<number | null>(null);
-  const [lock, setLock] = useState(false);
   const [moves, setMoves] = useState(0);
-
-  useEffect(() => {
-    reset();
-  }, []);
 
   useEffect(() => {
     if (first === null || second === null) return;
@@ -37,7 +44,6 @@ export default function Memoji() {
     const s = cards.find((c) => c.id === second);
     if (!f || !s) return;
 
-    setLock(true);
     setTimeout(() => {
       setCards((prev) =>
         prev.map((c) => {
@@ -47,7 +53,6 @@ export default function Memoji() {
             }
             return { ...c, flipped: false };
           }
-          return c;
         })
       );
       setFirst(null);
@@ -58,24 +63,14 @@ export default function Memoji() {
   }, [first, second, cards]);
 
   function reset() {
-    // pick 6 random unique emojis from the pool for variety
-    const poolShuffled = shuffle(EMOJI_POOL).slice(0, 6);
-    const pairEmojis = poolShuffled.concat(poolShuffled);
-    const shuffled = shuffle(pairEmojis).map((emoji, idx) => ({
-      id: idx,
-      emoji,
-      flipped: false,
-      matched: false,
-    }));
-    setCards(shuffled);
+    setCards(createCards());
     setFirst(null);
     setSecond(null);
-    setLock(false);
     setMoves(0);
   }
 
   function flipCard(id: number) {
-    if (lock) return;
+    if (first !== null && second !== null) return;
     const card = cards.find((c) => c.id === id);
     if (!card || card.flipped || card.matched) return;
 

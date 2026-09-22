@@ -218,8 +218,6 @@ export default function Blackjack() {
     : null;
 
   useEffect(() => {
-    setShowResultOverlay(false);
-
     if (!isRoundOver || !resultOverlay) {
       return;
     }

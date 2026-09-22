@@ -39,8 +39,32 @@ function defaultDecks(): FlashcardDeck[] {
 }
 
 export default function Flashcards() {
-  const [decks, setDecks] = useState<FlashcardDeck[]>(() => defaultDecks());
-  const [selectedDeckId, setSelectedDeckId] = useState<string>("starter-deck");
+  const [decks, setDecks] = useState<FlashcardDeck[]>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as SavedData;
+        if (saved && Array.isArray(saved.decks) && saved.decks.length > 0) {
+          return saved.decks;
+        }
+      }
+    } catch {
+      // ignore malformed local data
+    }
+    return defaultDecks();
+  });
+  const [selectedDeckId, setSelectedDeckId] = useState<string>(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw) as SavedData;
+        if (saved && saved.selectedDeckId) return saved.selectedDeckId;
+      }
+    } catch {
+      // ignore malformed local data
+    }
+    return "starter-deck";
+  });
   const [newDeckName, setNewDeckName] = useState("");
   const [showCreateDeckModal, setShowCreateDeckModal] = useState(false);
 
@@ -58,21 +82,6 @@ export default function Flashcards() {
   const [studyAttempted, setStudyAttempted] = useState(0);
 
   const selectedDeck = useMemo(() => decks.find((deck) => deck.id === selectedDeckId) ?? decks[0], [decks, selectedDeckId]);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-
-      const saved = JSON.parse(raw) as SavedData;
-      if (!saved || !Array.isArray(saved.decks) || saved.decks.length === 0) return;
-
-      setDecks(saved.decks);
-      setSelectedDeckId(saved.selectedDeckId || saved.decks[0].id);
-    } catch {
-      // ignore malformed local data
-    }
-  }, []);
 
   useEffect(() => {
     if (!decks.length) return;
